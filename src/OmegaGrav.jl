@@ -1,5 +1,10 @@
 module OmegaGrav
-
-greet() = print("Hello World!")
-
+using HCubature
+using Dierckx
+using SpecialFunctions
+using MatterPower
+using HaloMF
+export ograv_pk, ograv_halo
+include("ograv.jl")
+include("Ag.jl")
 end # module
