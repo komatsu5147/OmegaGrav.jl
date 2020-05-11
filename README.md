@@ -4,7 +4,7 @@ This package contains functions to compute gravitational binding energy associat
 
 The package contains
 - ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=1e2)``: returns the comoving density parameter, `Ωgrav`, of gravitational binding energy computed from a matter power spectrum `pk`. It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Chiang, Makiya, Komatsu & Ménard (in prep)
-- ``ograv_halo(pk, z, Ωm; Mmin=5e8, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` coming from collapsed structures (*halos*) in the Universe. It uses Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+- ``ograv_halo(pk, z, Ωm; Mmin=5e8, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 ## Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.
