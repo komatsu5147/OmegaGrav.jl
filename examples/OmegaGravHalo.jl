@@ -28,10 +28,14 @@ pk(kovh) =
    2 *
    π^2 / kovh^3
 
-# %% Compute Ωgrav from halos, using M200m and Mvir
+# %% Compute Ωgrav from halos, using M200m and Mvir, and tinker08MF and tinker10MF
 z = redshift
 println("redshift = ", z)
 Ωgrav_halo = ograv_halo(pk, z, Ωm)
-println("Ωgrav(Δm=200) = ", Ωgrav_halo)
+println("Ωgrav(Δm=200, T08) = ", Ωgrav_halo)
 Ωgrav_halo = ograv_halo(pk, z, Ωm, virial = true)
-println("Ωgrav(Δvir) = ", Ωgrav_halo)
+println("Ωgrav(Δvir, T08) = ", Ωgrav_halo)
+Ωgrav_halo = ograv_halo(pk, z, Ωm, t10MF = true)
+println("Ωgrav(Δm=200, T10) = ", Ωgrav_halo)
+Ωgrav_halo = ograv_halo(pk, z, Ωm, virial = true, t10MF = true)
+println("Ωgrav(Δvir, T10) = ", Ωgrav_halo)
