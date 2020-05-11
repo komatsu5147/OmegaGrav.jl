@@ -1,13 +1,50 @@
-function ograv_pk(pk, z, Ωm; kmin = 5e-4, kmax = 1e2)
+"""
+   ograv_pk(pk, z, Ωm; kmin = 5e-4, kmax = 1e2)
+
+Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
+
+*Reference*: Equation (60) of Fukugita & Peebles, ApJ, 616, 643 (2004)
+- With the redshift evolution factor of Chiang, Makiya, Komatsu & Ménard (in prep)
+
+# Arguments
+- `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
+    - **pk times k^3 must be dimensionless**. For example, if k is in units of h/Mpc, `pk` must be in units of Mpc^3/h^3.
+- `z::Real`: redshift.
+- `Ωm::Real`: present-day matter density parameter.
+
+# Optional arguments
+- `kmin::Real=5e-4`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
+- `kmax::Real=1e2`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
+"""
+function ograv_pk(pk, z::Real, Ωm::Real; kmin = 5e-4, kmax = 1e2)
    res, err = hquadrature(pk, kmin, kmax)
    halfW = -3 * Ωm * (1 + z) / 2998^2 / 16 / π^2 * res
    Ωgrav = halfW * Ωm
 end
 
+"""
+   ograv_halo(pk, z, Ωm; Mmin = 5e8, Mmax = 5e15, virial = false, t10MF = false)
+
+Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
+
+*Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+
+# Arguments
+- `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
+    - **pk times k^3 must be dimensionless**. For example, if k is in units of h/Mpc, `pk` must be in units of Mpc^3/h^3.
+- `z::Real`: redshift.
+- `Ωm::Real`: present-day matter density parameter.
+
+# Optional arguments
+- `Mmin::Real=5e8`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
+- `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
+"""
 function ograv_halo(
    pk,
-   z,
-   Ωm;
+   z::Real,
+   Ωm::Real;
    Mmin = 5e8,
    Mmax = 5e15,
    virial = false,
@@ -58,7 +95,23 @@ function ograv_halo(
    Ωgrav = halfW * Ωm
 end
 
-function Ag(c, method = "poly4")
+"""
+   Ag(c:Real; method = "poly4")
+
+Integral of the squared Fourier transform of an NFW density profile, ``(1/π)∫_0^∞ dx |u(x,c)|^2``.
+
+*Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+
+# Arguments
+- `c::Real`: concentration parameter.
+
+# Optional arguments
+- `method::String="poly4"`: approximation method.
+   - `poly4` (the default) or other values for 4th order polynomial fit.
+   - `poly3` for 3rd order polynomial fit.
+   - `exact` for numerical integration.
+"""
+function Ag(c::Real; method = "poly4")
    if method == "poly3" # 3rd order polynomial fit
       y = c - 5
       Ag = 1.0184 + 5.389e-2 * y - 1.514e-3 * y^2 + 3.845e-5 * y^3
