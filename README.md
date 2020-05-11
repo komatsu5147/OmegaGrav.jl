@@ -130,3 +130,42 @@ println("Ωgrav(Δm=200, T10) = ", Ωgrav_halo)
 Ωgrav_halo = ograv_halo(pk, z, Ωm, virial = true, t10MF = true)
 println("Ωgrav(Δvir, T10) = ", Ωgrav_halo)
 ```
+## The physics behind
+
+What is *binding energy*? Consider a hydrogen atom: it has a proton and an electron. This is a bound system, and it takes some energy to remove the electron from the atom. This energy is called binding energy. For a hydrogen atom, the binding energy is -13.6 electron volts. Note the negative sign; you need to inject energy to remove the electron. When the injected energy and binding energy sum to zero, the electron is able to escape the atom. Any extra energy above that will go to kinetic energy of the escaping electron.
+
+The same applies to a gravitationally bound system. Consider a sphere with a radius R and a uniform density ρ. It is known (see [wikipedia](https://en.wikipedia.org/wiki/Gravitational_binding_energy)) that gravitational binding energy of a uniform density sphere is -3GM<sup>2</sup>/(5R). This is the energy required to tear a gravitating uniform density sphere apart.
+
+We can define the total potential energy associated with an arbitrary distribution of matter in expanding space. Let us write the total potential energy per unit mass as W and the total mass of a system as M. Equation (24.2) of Jim Peeble's 1980 book "[Large-scale Structure of the Universe](https://press.princeton.edu/books/paperback/9780691209838/the-large-scale-structure-of-the-universe)" gives
+
+MW = (1/2)a<sup>3</sup>∫ d<sup>3</sup>x ϕ(x) [ρ(x) - ρ<sub>b</sub>] -- (1)
+
+where x denotes the comoving coordinates, a is the scale factor, a<sup>3</sup>d<sup>3</sup>x is a physical volume element, ϕ(x) and ρ(x) are distributions of Newton's gravitational potential and matter density, respectively, and ρb is the background matter density. Thus, the potential is sourced by a density excess above the background, δρ ≡ ρ(r) - ρ<sub>b</sub>. For a uniform density sphere above the background with a physical radius R,
+a mass excess δM = 4πG δρ R<sup>3</sup>/3 and ϕ(r) = -4πG δρ r<sup>2</sup>/3, we find MW = -3G(δM)<sup>2</sup>/(5R). This agrees with the gravitaional binding energy of a uniform density sphere.
+
+The potential ϕ is related to the density excess via Poisson equation:
+
+∇<sup>2</sup>ϕ = 4πG a<sup>2</sup> δρ -- (2)
+
+where a spatial differential operator ∇ is defined with respect to the comoving coordinates x (hence the factor a<sup>2</sup> in the right hand side).
+Now, Fourier transforming Equations (1,2), taking ensemble average of Eq.(1) and dividing both sides
+of Eq.(1) by the total mass M, we obtain
+
+W = -(1/π)G a<sup>2</sup>ρ<sub>b</sub> ∫dk P(k) -- (3)
+
+where P(k) is the power spectrum of excess matter density constast, δρ/ρ<sub>b</sub>. Eq.(3) is Fourier transform of Equation (24.9) of  [Peeble's book](https://press.princeton.edu/books/paperback/9780691209838/the-large-scale-structure-of-the-universe). Thus,once we have P(k) (from, e.g., [MatterPower.jl](https://github.com/komatsu5147/MatterPower.jl)), we can integrate Eq.(3) to find the total gravitational potential energy of the large-scale structure in the Universe. Isn't it neat?
+
+Eq.(3) receives contributions from excess matter clustering at all scales. However, not all structures in the Universe have collapsed gravitationally, like galaxies and clusters of galaxies. Collectively, we call gravitationally collapsed structures in the large-scale structure "*halos*". How can we isolate contributions from halos? The matter power spectrum can be divided into contributions from matter clustering inside halos ("1-halo term", P<sub>1h</sub>) and clustering between different halos ("2-halo term", P<sub>2h</sub>). The 1-halo term is given by
+
+P<sub>1h</sub>(k) = (1/ρ<sub>b0</sub><sup>2</sup>)∫ dM dn/dM M<sup>2</sup> |u(k,R)|<sup>2</sup>  -- (4)
+
+where ρ<sub>b0</sub> = a<sup>3</sup>ρ<sub>b</sub> is the present-day background matter density, M is the mass of a halo, dn/dM is the number density of halos per unit mass interval (see [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl)), and u(k,M) is Fourier transform of density profile of halos normalized as u(k,M) → 1 for k → 0.  
+
+Using Eq.(4) in Eq.(3), we find
+
+W<sub>1h</sub> = -(1/ρ<sub>b0</sub>)∫ dM dn/dM  (GM<sup>2</sup>/R) A<sub>g</sub>(M) -- (5)
+
+where R is a physical size of a halo and A<sub>g</sub>(M) ≡ (1/π)∫ dk |u(k,M)|<sup>2</sup>. A<sub>g</sub> is equal to 3/5 for a uniform density sphere  and is independent of M, but it depends on M in general. Equation (5) was derived by Chiang, Makiya, Komatsu & Ménard (in prep).
+
+In this Julia package `OmegaGrav.jl`, we provide functions `ograv_pk(pk, z, Ωm)` and `ograv_halo(pk, z, Ωm)` to calculate Equations (3) and (5), respectively, as a function of redshift `z`. More precisely, we define the comoving density parameter `Ωgrav` defined by ``Ωgrav = Ωm W/2``, where `Ωm` is the present-day matter density parameter. 
+The calculation using these Julia functions shows that `ograv_halo` is about 1/3 and 1/10 of `ograv_pk` at z=0 and 1.5, respectively.

@@ -49,8 +49,9 @@ p = plot(
    yaxis = :log10,
    legend = :bottomleft,
    ls = :dash,
+   m = 2,
 )
-p = plot!(redshift, -Ωgrav_pknl, lab = "Non-linear P(k)")
-p = plot!(redshift, -Ωgrav_halo, lab = "Halos")
+p = plot!(redshift, -Ωgrav_pknl, m = 2, lab = "Non-linear P(k)")
+p = plot!(redshift, -Ωgrav_halo, m = 2, lab = "Halos")
 savefig("omegagrav_class.pdf")
 display(p)
