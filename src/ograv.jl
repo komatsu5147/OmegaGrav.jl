@@ -12,7 +12,7 @@ Comoving density parameter of gravitational binding energy computed from a matte
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day matter density parameter.
 
-# Optional arguments
+# Optional keyword arguments
 - `kmin::Real=5e-4`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
 - `kmax::Real=1e2`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
 """
@@ -35,7 +35,7 @@ Comoving density parameter of gravitational binding energy computed from a matte
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day matter density parameter.
 
-# Optional arguments
+# Optional keyword arguments
 - `Mmin::Real=5e8`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
 - `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
@@ -105,7 +105,7 @@ Integral of the squared Fourier transform of an NFW density profile, ``(1/π)∫
 # Arguments
 - `c::Real`: concentration parameter.
 
-# Optional arguments
+# Optional keyword arguments
 - `method::String="poly4"`: approximation method.
    - `poly4` (the default) or other values for 4th order polynomial fit.
    - `poly3` for 3rd order polynomial fit.

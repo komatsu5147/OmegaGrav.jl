@@ -11,13 +11,13 @@ The package contains
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day total matter density parameter.
 
-## Optional arguments
+## Optional keyword arguments
 - `kmin::Real`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `5e-4`.
 - `kmax::Real`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `1e2`.
 - `Mmin::Real`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `5e8`.
 - `Mmax::Real`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `5e15`.
-- `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
-- `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`. See [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl) for definition of these functions.
+- `virial::Bool`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
+- `t10MF::Bool`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`. See [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl) for definition of these functions.
 
 ## Example Juia codes
 ### 1. Ωgrav from linear and non-linear matter power spectra
