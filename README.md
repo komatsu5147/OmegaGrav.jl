@@ -140,8 +140,8 @@ We can define the total potential energy associated with an arbitrary distributi
 
 MW = (1/2)a<sup>3</sup>∫ d<sup>3</sup>x ϕ(x) [ρ(x) - ρ<sub>b</sub>] -- (1)
 
-where x denotes the comoving coordinates, a is the scale factor, a<sup>3</sup>d<sup>3</sup>x is a physical volume element, ϕ(x) and ρ(x) are distributions of Newton's gravitational potential and matter density, respectively, and ρ<sub>b</sub> is the background matter density. Thus, the potential is sourced by a density excess above the background, δρ ≡ ρ(r) - ρ<sub>b</sub>. For a uniform density sphere above the background with a physical radius R,
-a mass excess δM = 4πG δρ R<sup>3</sup>/3 and ϕ(r) = -4πG δρ r<sup>2</sup>/3, we find MW = -3G(δM)<sup>2</sup>/(5R). This reproduces the factor of 3/5 for gravitaional binding energy of a uniform density sphere.
+where x denotes the comoving coordinates, a is the scale factor, a<sup>3</sup>d<sup>3</sup>x is a physical volume element, ϕ(x) and ρ(x) are distributions of Newton's gravitational potential and matter density, respectively, and ρ<sub>b</sub> is the background matter density. Thus, the potential is sourced by a density excess above the background, δρ ≡ ρ(x) - ρ<sub>b</sub>. For a uniform density sphere above the background with a physical radius R,
+a mass excess δM = 4πG δρ R<sup>3</sup>/3 and ϕ(r≦R) = -2πG δρ (R<sup>2</sup>-r<sup>2</sup>/3), we find MW = -3G(δM)<sup>2</sup>/(5R). This reproduces the factor of 3/5 in gravitaional binding energy of a uniform density sphere.
 
 The potential ϕ is related to the density excess via Poisson equation:
 
@@ -149,7 +149,7 @@ The potential ϕ is related to the density excess via Poisson equation:
 
 where a spatial differential operator ∇ is defined with respect to the comoving coordinates x (hence the factor a<sup>2</sup> in the right hand side).
 Now, Fourier transforming Equations (1,2), taking ensemble average of Eq.(1) and dividing both sides
-of Eq.(1) by the total mass M, we obtain
+of Eq.(1) by the total mass of the system M = ρ<sub>b</sub> a<sup>3</sup>∫d<sup>3</sup>x, we obtain
 
 W = -(1/π)G a<sup>2</sup>ρ<sub>b</sub> ∫dk P(k) -- (3)
 
