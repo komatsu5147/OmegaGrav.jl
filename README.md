@@ -159,7 +159,7 @@ Eq.(3) receives contributions from excess matter clustering at all scales. Howev
 
 P<sub>1h</sub>(k) = (1/ρ<sub>b0</sub><sup>2</sup>)∫ dM dn/dM M<sup>2</sup> |u(k,R)|<sup>2</sup>  -- (4)
 
-where ρ<sub>b0</sub> = a<sup>3</sup>ρ<sub>b</sub> is the present-day background matter density, M is the mass of a halo, dn/dM is the number density of halos per unit mass interval (see [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl)), and u(k,M) is Fourier transform of density profile of halos normalized as u(k,M) → 1 for k → 0.  
+where k is the comoving wavenumber, ρ<sub>b0</sub> = a<sup>3</sup>ρ<sub>b</sub> is the present-day background matter density, M is the mass of a halo, dn/dM is the number density of halos per unit mass interval (see [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl)), and u(k,M) is Fourier transform of density profile of halos normalized as u(k,M) → 1 for k → 0.  
 
 Using Eq.(4) in Eq.(3), we find
 
@@ -167,4 +167,4 @@ W<sub>1h</sub> = -(1/ρ<sub>b0</sub>)∫ dM dn/dM  (GM<sup>2</sup>/R) A<sub>g</s
 
 where R is a physical size of a halo and A<sub>g</sub>(M) ≡ (1/π)∫ dk |u(k,M)|<sup>2</sup>. A<sub>g</sub> is equal to 3/5 for a uniform density sphere  and is independent of M, but it depends weakly on M in general. Equation (5) was derived by Chiang, Makiya, Komatsu & Ménard (in prep).
 
-In this Julia package `OmegaGrav.jl`, we provide functions `ograv_pk(pk, z, Ωm)` and `ograv_halo(pk, z, Ωm)` to calculate Equations (3) and (5), respectively, as a function of redshift `z`. More precisely, the functions return the comoving density parameter `Ωgrav` defined by ``Ωgrav = Ωm W/2`` (following Section 2.4 of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155)), where `Ωm` is the present-day matter density parameter. For example, the calculation using these Julia functions shows that `ograv_halo` is about 1/3 and 1/10 of `ograv_pk` with the non-linear P(k) at z=0 and 1.5, respectively. Good to know!
+In this Julia package `OmegaGrav.jl`, we provide functions `ograv_pk(pk, z, Ωm)` and `ograv_halo(pk, z, Ωm)` to evaluate Equations (3) and (5), respectively, as a function of redshift `z`. More precisely, the functions return the comoving density parameter `Ωgrav` defined by ``Ωgrav = Ωm W/2`` (following Section 2.4 of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155)), where `Ωm` is the present-day matter density parameter. For example, the calculation using these Julia functions shows that `ograv_halo` is about 1/3 and 1/10 of `ograv_pk` with the non-linear P(k) at z=0 and 1.5, respectively. Good to know!
