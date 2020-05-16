@@ -1,7 +1,7 @@
 """
    ograv_pk(pk, z, Ωm; kmin = 5e-4, kmax = 3d1)
 
-Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
+Comoving density parameter of gravitational binding energy of large-scale structure of the Universe.
 
 *Reference*: Equation (60) of Fukugita & Peebles, ApJ, 616, 643 (2004)
 - With the redshift evolution factor of Chiang, Makiya, Komatsu & Ménard (in prep)
@@ -25,7 +25,7 @@ end
 """
    ograv_halo(pk, z, Ωm; Mmin = 1e10, Mmax = 1e16, virial = false, t10MF = false)
 
-Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
+Comoving density parameter of gravitational binding energy of gravitationally collapsed structures (halos).
 
 *Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
