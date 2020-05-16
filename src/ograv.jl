@@ -1,5 +1,5 @@
 """
-   ograv_pk(pk, z, Ωm; kmin = 5e-4, kmax = 1e2)
+   ograv_pk(pk, z, Ωm; kmin = 5e-4, kmax = 3d1)
 
 Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
 
@@ -14,16 +14,16 @@ Comoving density parameter of gravitational binding energy computed from a matte
 
 # Optional keyword arguments
 - `kmin::Real=5e-4`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
-- `kmax::Real=1e2`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
+- `kmax::Real=3e1`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
 """
-function ograv_pk(pk, z::Real, Ωm::Real; kmin = 5e-4, kmax = 1e2)
+function ograv_pk(pk, z::Real, Ωm::Real; kmin = 5e-4, kmax = 3e1)
    res, err = hquadrature(pk, kmin, kmax)
    halfW = -3 * Ωm * (1 + z) / 2998^2 / 16 / π^2 * res
    Ωgrav = halfW * Ωm
 end
 
 """
-   ograv_halo(pk, z, Ωm; Mmin = 5e8, Mmax = 5e15, virial = false, t10MF = false)
+   ograv_halo(pk, z, Ωm; Mmin = 1e10, Mmax = 1e16, virial = false, t10MF = false)
 
 Comoving density parameter of gravitational binding energy computed from a matter power spectrum.
 
@@ -36,8 +36,8 @@ Comoving density parameter of gravitational binding energy computed from a matte
 - `Ωm::Real`: present-day matter density parameter.
 
 # Optional keyword arguments
-- `Mmin::Real=5e8`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
-- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmin::Real=1e10`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmax::Real=1e16`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
 """
@@ -45,8 +45,8 @@ function ograv_halo(
    pk,
    z::Real,
    Ωm::Real;
-   Mmin = 5e8,
-   Mmax = 5e15,
+   Mmin = 1e10,
+   Mmax = 1e16,
    virial = false,
    t10MF = false,
 )
