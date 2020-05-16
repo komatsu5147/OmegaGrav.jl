@@ -87,7 +87,7 @@ function ograv_halo(
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωm * Δm)) / (1 + z) # in h^-1 Mpc
          A, B, C = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
       end
-      c = A * (exp(lnMh) / 2e12)^B / (1 + z)^1.01
+      c = A * (exp(lnMh) / 2e12)^B * (1 + z)^C
       dρdlnMh = 0.5 * spl(lnMh) * GN * exp(2 * lnMh) / RΔh * Ag(c)
    end
    ρgrav, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
