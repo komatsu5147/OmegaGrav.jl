@@ -23,7 +23,7 @@ function ograv_pk(pk, z::Real, Ωm::Real; kmin = 5e-4, kmax = 3e1)
 end
 
 """
-   ograv_halo(pk, z, Ωm; Mmin = 1e10, Mmax = 1e16, virial = false, t10MF = false)
+   ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin = 1e11, Mmax = 5e15, virial = false, t10MF = false)
 
 Comoving density parameter of gravitational binding energy of gravitationally collapsed structures (halos).
 
@@ -33,20 +33,24 @@ Comoving density parameter of gravitational binding energy of gravitationally co
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
     - **pk times k^3 must be dimensionless**. For example, if k is in units of h/Mpc, `pk` must be in units of Mpc^3/h^3.
 - `z::Real`: redshift.
-- `Ωm::Real`: present-day matter density parameter.
+- `Ωm::Real`: present-day total matter density parameter.
+
+# Optional Arguments
+- `Ωcb::Real=Ωm`: present-day baryon + cold dark matter density parameter.
 
 # Optional keyword arguments
-- `Mmin::Real=1e10`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
-- `Mmax::Real=1e16`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
 """
 function ograv_halo(
    pk,
    z::Real,
-   Ωm::Real;
-   Mmin = 1e10,
-   Mmax = 1e16,
+   Ωm::Real,
+   Ωcb = Ωm;
+   Mmin = 1e11,
+   Mmax = 5e15,
    virial = false,
    t10MF = false,
 )
@@ -64,7 +68,7 @@ function ograv_halo(
    lnMh = range(log(Mmin), length = nmass, log(Mmax))
    dndlnMh = zeros(nmass)
    for i = 1:nmass
-      Rh = cbrt(exp(lnMh[i]) * 3 / 4π / ρc / Ωm) # in units of Mpc/h
+      Rh = cbrt(exp(lnMh[i]) * 3 / 4π / ρc / Ωcb) # in units of Mpc/h
       σ2 = sigma2(pk, Rh)
       dlnσ2dlnRh = Rh * dsigma2dR(pk, Rh) / σ2
       lnν = 2 * log(1.6865) - log(σ2)
@@ -84,15 +88,15 @@ function ograv_halo(
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * E2 * Δvir)) # in h^-1 Mpc
          A, B, C = 7.85, -0.081, -0.71 # Avir, Bvir, Cvir in Table 1 of Duffy et al.
       else # For Δ = Δm = 200
-         RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωm * Δm)) / (1 + z) # in h^-1 Mpc
+         RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωcb * Δm)) / (1 + z) # in h^-1 Mpc
          A, B, C = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
       end
       c = A * (exp(lnMh) / 2e12)^B * (1 + z)^C
       dρdlnMh = 0.5 * spl(lnMh) * GN * exp(2 * lnMh) / RΔh * Ag(c)
    end
    ρgrav, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
-   halfW = -ρgrav / ρc / Ωm
-   Ωgrav = halfW * Ωm
+   halfW = -ρgrav / ρc / Ωcb
+   Ωgrav = halfW * Ωcb
 end
 
 """
