@@ -46,7 +46,6 @@ redshift = zeros(nred + 1)
 Ωth = zeros(nred + 1)
 Ωthu = zeros(nred + 1)
 Ωthl = zeros(nred + 1)
-ΩthB1 = zeros(nred + 1)
 for ired = 1:nred+1
    if ired == 1
       z = 0 # Add z=0 which is not included in the data file
@@ -71,8 +70,6 @@ for ired = 1:nred+1
    # %% Compute Ωtherm for upper and lower 68% confidence level in B
    Ωthl[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.315)
    Ωthu[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.221)
-   # %% Compute Ωtherm for no mass bias case for comparison
-   ΩthB1[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1)
 end
 
 #%% Plot results and save to figure1.pdf

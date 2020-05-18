@@ -86,12 +86,12 @@ function ograv_halo(
    function dρdlnMh(lnMh)
       if virial # For Δ = Δvir(z)
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * E2 * Δvir)) # in h^-1 Mpc
-         A, B, C = 7.85, -0.081, -0.71 # Avir, Bvir, Cvir in Table 1 of Duffy et al.
+         A0, B0, C0 = 7.85, -0.081, -0.71 # Avir, Bvir, Cvir in Table 1 of Duffy et al.
       else # For Δ = Δm = 200
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωcb * Δm)) / (1 + z) # in h^-1 Mpc
-         A, B, C = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
+         A0, B0, C0 = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
       end
-      c = A * (exp(lnMh) / 2e12)^B * (1 + z)^C
+      c = A0 * (exp(lnMh) / 2e12)^B0 * (1 + z)^C0
       dρdlnMh = 0.5 * spl(lnMh) * GN * exp(2 * lnMh) / RΔh * Ag(c)
    end
    ρgrav, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
