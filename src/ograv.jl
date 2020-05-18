@@ -31,7 +31,7 @@ Comoving density parameter of gravitational binding energy of gravitationally co
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
-    - **pk times k^3 must be dimensionless**. For example, if k is in units of h/Mpc, `pk` must be in units of Mpc^3/h^3.
+   - `pk` is in units of (Mpc/h)^3 and the argument k is in units of h/Mpc.
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day total matter density parameter.
 

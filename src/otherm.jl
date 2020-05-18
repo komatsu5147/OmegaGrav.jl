@@ -7,7 +7,7 @@ Comoving density parameter of thermal energy of ionized baryonsgas in collapsed 
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
-    - **pk times k^3 must be dimensionless**. For example, if k is in units of h/Mpc, `pk` must be in units of Mpc^3/h^3.
+   - `pk` is in units of (Mpc/h)^3 and the argument k is in units of h/Mpc.
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day total matter density parameter.
 - `h0::Real`: present-day Hubble constant in units of 100 km/s/Mpc.
@@ -17,8 +17,8 @@ Comoving density parameter of thermal energy of ionized baryonsgas in collapsed 
 
 # Optional keyword arguments
 - `massbias::Real=1.266`: mass bias parameter for Planck's universal pressure profile, `B=Mtrue/Mplanck`.
-- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
-- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
+- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
 """
 function otherm_upp(
@@ -95,8 +95,8 @@ Comoving density parameter of thermal energy of ionized baryonsgas in collapsed 
 - `Ωcb::Real=Ωm`: present-day baryon + cold dark matter density parameter.
 
 # Optional keyword arguments
-- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
-- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``.
+- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
+- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
 """

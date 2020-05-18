@@ -39,3 +39,13 @@ println("Ωgrav(Δvir, T08) = ", Ωgrav_halo)
 println("Ωgrav(Δm=200, T10) = ", Ωgrav_halo)
 Ωgrav_halo = ograv_halo(pk, z, Ωm, virial = true, t10MF = true)
 println("Ωgrav(Δvir, T10) = ", Ωgrav_halo)
+
+# %% Compute Ωgrav from halos by integrating the 1-halo power spectrum
+# This should agree with the corresponding result in the above.
+# Define a function to return a 1-halo term power spectrum
+pk_1halo(kovh) = onehalo(pk, z, Ωm, kovh) # Mpc^3/h^3
+# pk_1halo(kovh) = onehalo(pk, z, Ωm, kovh, virial = true)
+# pk_1halo(kovh) = onehalo(pk, z, Ωm, kovh, t10MF = true)
+# pk_1halo(kovh) = onehalo(pk, z, Ωm, kovh, virial = true, t10MF = true)
+Ωgrav_halo = ograv_pk(pk_1halo, z, Ωm, kmax = 1e2)
+println("Ωgrav(1-halo pk, Δm=200, T08) = ", Ωgrav_halo)

@@ -10,6 +10,7 @@ The package contains
 
 ## Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.
+   - `pk` is in units of (Mpc/h)^3 and the argument k is in units of h/Mpc.
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day total matter density parameter.
 
