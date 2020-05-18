@@ -2,7 +2,7 @@
 
 This package contains functions to compute gravitational binding energy associated with large-scale clustering of matter (the so-called *large-scale structure*) in the Universe.
 
-If you come here from the paper (Chiang, Makiya, Komatsu & Ménard), you can use [examples/PlotFigure1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure1.jl), [examples/PlotFigure2.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure2.jl), and [examples/GenerateTable1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateTable1.jl) to reproduce the results presented in the paper.
+If you come here from the paper (Chiang, Makiya, Komatsu & Ménard), you can use [examples/PlotFigure1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure1.jl), [examples/PlotFigure2.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure2.jl), and [examples/GenerateTable1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateTable1.jl) to reproduce the results presented in the paper. Running these codes requires the python wrapper for CLASS [classy](https://github.com/lesgourg/class_public/wiki/Python-wrapper). The codes call `classy` via `PyCall`.
 
 The package contains
 - ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav`, of gravitational binding energy computed from a matter power spectrum `pk`. It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Chiang, Makiya, Komatsu & Ménard (in prep)
