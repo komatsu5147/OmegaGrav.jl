@@ -65,21 +65,12 @@ function ograv_halo(
       Δm = 200
    end
    nmass = 100
+   func = zeros(nmass)
    lnMh = range(log(Mmin), length = nmass, log(Mmax))
-   dndlnMh = zeros(nmass)
    for i = 1:nmass
-      Rh = cbrt(exp(lnMh[i]) * 3 / 4π / ρc / Ωcb) # in units of Mpc/h
-      σ2 = sigma2(pk, Rh)
-      dlnσ2dlnRh = Rh * dsigma2dR(pk, Rh) / σ2
-      lnν = 2 * log(1.6865) - log(σ2)
-      if t10MF
-         MF = tinker10MF(lnν, z, Δm)
-      else
-         MF = tinker08MF(lnν, z, Δm)
-      end
-      dndlnMh[i] = -dlnσ2dlnRh * MF / 4π / Rh^3 # in units of h^3 Mpc^-3
+      func[i] = dndlnMh(pk, z, Δm, Ωcb, lnMh[i], t10MF = t10MF)
    end
-   spl = Spline1D(lnMh, dndlnMh)
+   spl = Spline1D(lnMh, func)
    # %% Compute ρgrav = (1/2) * \int dlnM dn/dlnM Ag*GM^2/R, in units of h^2 M⊙/Mpc^3
    # c(M) relation is due to Equation (2) and "NFW, F, 0-2" of Table 1 in
    # Duffy et al., MNRAS, 390, L64 (2008)

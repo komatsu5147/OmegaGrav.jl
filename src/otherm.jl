@@ -35,24 +35,15 @@ function otherm_upp(
    ρc = 2.775e11 # in units of h^2 M⊙/Mpc^3
    ρceVcm3 = 1.05375e4 # in units of h^2 eV/cm^3
    Δc = 500 # 500 times the critical density of the Universe
+   E2 = Ωm * (1 + z)^3 + 1 - Ωm  # flat Universe
+   Δm = Δc * E2 / Ωm / (1 + z)^3 # Δm for mass function
    nmass = 100
+   func = zeros(nmass)
    lnMh = range(log(Mmin), length = nmass, log(Mmax))
-   dndlnMh = zeros(nmass)
    for i = 1:nmass
-      Rh = cbrt(exp(lnMh[i]) * 3 / 4π / ρc / Ωcb) # in units of Mpc/h
-      σ2 = sigma2(pk, Rh)
-      dlnσ2dlnRh = Rh * dsigma2dR(pk, Rh) / σ2
-      lnν = 2 * log(1.6865) - log(σ2)
-      E2 = Ωm * (1 + z)^3 + 1 - Ωm  # flat Universe
-      Δm = Δc * E2 / Ωm / (1 + z)^3 # Δm for mass function
-      if t10MF
-         MF = tinker10MF(lnν, z, Δm)
-      else
-         MF = tinker08MF(lnν, z, Δm)
-      end
-      dndlnMh[i] = -dlnσ2dlnRh * MF / 4π / Rh^3 # in units of h^3 Mpc^-3
+      func[i] = dndlnMh(pk, z, Δm, Ωcb, lnMh[i], t10MF = t10MF)
    end
-   spl = Spline1D(lnMh, dndlnMh)
+   spl = Spline1D(lnMh, func)
    # %% Pressure profile integral
    # Planck's universal pressure profile
    # Reference: Planck Collaboration, A&A, 550, A131 (2013)
@@ -122,21 +113,12 @@ function otherm_ks(
       Δm = 200
    end
    nmass = 100
+   func = zeros(nmass)
    lnMh = range(log(Mmin), length = nmass, log(Mmax))
-   dndlnMh = zeros(nmass)
    for i = 1:nmass
-      Rh = cbrt(exp(lnMh[i]) * 3 / 4π / ρc / Ωcb) # in units of Mpc/h
-      σ2 = sigma2(pk, Rh)
-      dlnσ2dlnRh = Rh * dsigma2dR(pk, Rh) / σ2
-      lnν = 2 * log(1.6865) - log(σ2)
-      if t10MF
-         MF = tinker10MF(lnν, z, Δm)
-      else
-         MF = tinker08MF(lnν, z, Δm)
-      end
-      dndlnMh[i] = -dlnσ2dlnRh * MF / 4π / Rh^3 # in units of h^3 Mpc^-3
+      func[i] = dndlnMh(pk, z, Δm, Ωcb, lnMh[i], t10MF = t10MF)
    end
-   spl = Spline1D(lnMh, dndlnMh)
+   spl = Spline1D(lnMh, func)
    ## Pressure profile integral
    # Komatsu-Seljak Pressure Profile
    # Reference: Komatsu & Seljak, MNRAS, 327, 1353 (2001)
