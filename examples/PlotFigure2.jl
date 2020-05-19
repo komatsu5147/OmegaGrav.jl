@@ -73,7 +73,8 @@ for ired = 1:nred+1
    Ωthu[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.221)
    # %% Compute Ωtherm for no mass bias case (B=1) for comparison
    ΩthB1[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1)
-   # ΩthB1[ired] = otherm_ks(pkcb, z, Ωm, 0.157, Ωcb) # Komatsu-Seljak profile
+   # %% Compute Ωtherm for Komatsu-Seljak profile
+   # ΩthB1[ired] = otherm_ks(pkcb, z, Ωm, 0.157, Ω
 end
 
 #%% Plot results and save to figure2.pdf

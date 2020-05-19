@@ -122,10 +122,19 @@ function otherm_ks(
    ## Pressure profile integral
    # Komatsu-Seljak Pressure Profile
    # Reference: Komatsu & Seljak, MNRAS, 327, 1353 (2001)
+   # Fitting formulae for γ(c) and η(c) are valid for 1<c<25.
+   # Reference: Equations (17,18) of Komatsu & Seljak, MNRAS, 336, 1256 (2002)
    γ(c) = 1.137 + 8.94e-2 * log(c / 5) - 3.68e-3 * (c - 5)
    η0(c) = 2.235 + 0.202 * (c - 5) - 1.16e-3 * (c - 5)^2
    B(c) = 3 / η0(c) * (γ(c) - 1) / γ(c) / (log(1 + c) / c - 1 / (1 + c))
    ygas(x, c) = (1 - B(c) * (1 - log(1 + x) / x))^(1 / (γ(c) - 1))
+   ksint = zeros(25)
+   for c = 1:25
+      ks(x) = x^2 * ygas(x, c)^γ(c)
+      ksint[c], err = hquadrature(ks, 0, 3c) # integrated out to r = 3*r200m
+   end
+   c = 1:25
+   ksints = Spline1D(c, ksint)
    # %% Compute ρth = \int dlnM dn/dlnM \int dV Pe, in units of h^2 eV/cm^3
    ## Gas thermal energy density: Komatsu-Seljak profile
    function dρdlnMh(lnMh)
@@ -139,9 +148,8 @@ function otherm_ks(
       c = A0 * (exp(lnMh) / 2e12)^B0 * (1 + z)^C0
       mc = log(1 + c) - c / (1 + c)
       ρgnorm = fb * (c * (1 + c)^2 * mc * ygas(c, c))^-1 # = 4πρgas(0)rs^3/Mgas
-      ks(x) = x^2 * ygas(x, c)^γ(c)
-      ksint, err = hquadrature(ks, 0, 3c) # integrated out to r = 3*r200m
-      dρdlnMh = spl(lnMh) * GN * exp(2 * lnMh) / RΔh * η0(c) / 3 * ρgnorm * ksint # in units of h^2 M⊙/Mpc^3
+      dρdlnMh =
+         spl(lnMh) * GN * exp(2 * lnMh) / RΔh * η0(c) / 3 * ρgnorm * ksints(c) # in units of h^2 M⊙/Mpc^3
    end
    res, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
    Ωtherm = res / ρc
