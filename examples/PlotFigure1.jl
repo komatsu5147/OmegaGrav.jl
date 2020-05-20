@@ -91,8 +91,9 @@ p = scatter(
 p = plot!(
    redshift,
    Ωth,
+   c = 1,
    ribbon = (Ωth - Ωthl, Ωthu - Ωth),
-   lab = L"B=1.266_{-0.045}^{+0.049}",
+   lab = L"B=1.27_{-0.04}^{+0.05}",
 )
 p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_{grav}^{total}", lw = 2)
 p = plot!(redshift, -Ωghalo, c = :green, lab = L"-\Omega_{grav}^{halo}", lw = 2)
