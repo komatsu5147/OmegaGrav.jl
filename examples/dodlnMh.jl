@@ -1,3 +1,8 @@
+# The functions dogravdlnMh() and dothermdlnMh() are needed only for "PlotFigure2.jl"
+using MatterPower
+using HaloMF
+using HCubature
+
 function dogravdlnMh(
    pk,
    z::Real,
@@ -69,4 +74,73 @@ function dothermdlnMh(
    dρdlnMh = spl * Pe * 4π * RΔh^3 / massbias
    Y = 0.24 # helium abundance
    Ωtherm = (8 - 5Y) / (4 - 2Y) * dρdlnMh * uppint / ρceVcm3
+end
+
+"""
+    dndlnMh(pk, z, Δm, Ωm, lnMh; t10MF = false)
+
+This function returns a value of the comoving halo number density per log mass interval in units of h^3/Mpc^3 at a specified value of the log(halo mass).
+
+# Arguments
+- `pk`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber.
+   - `pk` is in units of (Mpc/h)^3.
+- `z::Real`: redshift.
+- Δm: halo overdensity with respect to the mean mass density of the Universe
+- `Ωm::Real`: present-day matter density parameter. When excluding the neutrino contribution, use Ωcb (baryon + cold dark matter density parameter).
+- `lnMh::Real`: log(halo mass)
+   - halo mass is in units of M⊙/h.
+
+# Optional keyword arguments
+- `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
+"""
+function dndlnMh(pk, z, Δm, Ωm, lnMh; t10MF = false)
+   ρc = 2.775e11 # in units of h^2 M⊙/Mpc^3
+   Rh = cbrt(exp(lnMh) * 3 / 4π / ρc / Ωm) # in units of Mpc/h
+   σ2 = sigma2(pk, Rh)
+   dlnσ2dlnRh = Rh * dsigma2dR(pk, Rh) / σ2
+   lnν = 2 * log(1.6865) - log(σ2)
+   if t10MF
+      MF = tinker10MF(lnν, z, Δm)
+   else
+      MF = tinker08MF(lnν, z, Δm)
+   end
+   dndlnMh = -dlnσ2dlnRh * MF / 4π / Rh^3 # in units of h^3 Mpc^-3
+end
+
+"""
+   Ag(c:Real; method = "poly4")
+
+Integral of the squared Fourier transform of an NFW density profile, ``(1/π)∫_0^∞ dx |u(x,c)|^2``.
+
+*Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+
+# Arguments
+- `c::Real`: concentration parameter.
+
+# Optional keyword arguments
+- `method::String="poly4"`: approximation method.
+   - `poly4` (the default) or other values for 4th order polynomial fit.
+   - `poly3` for 3rd order polynomial fit.
+   - `exact` for numerical integration.
+"""
+function Ag(c::Real; method = "poly4")
+   if method == "poly3" # 3rd order polynomial fit
+      y = c - 5
+      Ag = 1.0184 + 5.389e-2 * y - 1.514e-3 * y^2 + 3.845e-5 * y^3
+   elseif method == "exact" # exact integration
+      f = log(1 + c) - c / (1 + c)
+      u2(x) =
+         (
+            sin(x / c) * (sinint((1 / c + 1) * x) - sinint(x / c)) +
+            cos(x / c) * (cosint((1 / c + 1) * x) - cosint(x / c)) -
+            sin(x) / (1 / c + 1) / x
+         )^2
+      res, err = hquadrature(u2, 0, 100)
+      Ag = res / π / f^2
+   else # 4th order polynomial fit
+      y = c - 5
+      Ag =
+         1.0202 + 5.376e-2 * y - 1.842e-3 * y^2 + 9.489e-5 * y^3 -
+         2.352e-6 * y^4
+   end
 end

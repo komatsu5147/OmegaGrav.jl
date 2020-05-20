@@ -1,5 +1,6 @@
 using OmegaGrav
 using PyCall
+using CSV
 using Dierckx
 using Plots, LaTeXStrings
 # %% Call the python wrapper for CLASS, `classy`, via PyCall
@@ -36,38 +37,85 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute dΩgrav/dlnMh and dΩtherm/dlnMh at z = 0
-z = 0
-# Define functions to return linear and non-linear power spectra
-# Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
-# return power spectra in units of Mpc^3 (no 1/h^3).
-pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
-lnk = log(1e-4):0.1:log(100)
-pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
-# %% Define a function to return dΩgrav/dlnMh from Halos, excluding the neutrino contribution
-dΩgdlnMh(lnMh) = dogravdlnMh(pkcb, z, Ωm, lnMh, Ωcb)
-# %% Define a function to return dΩtherm/dlnMh from Halos, excluding the neutrino contribution
-dΩthdlnMh(lnMh) = dothermdlnMh(pkcb, z, Ωm, h0, lnMh, Ωcb)
+# %% Compute Ωgrav and Ωtherm at redshifts of the data points
+d = CSV.read("data/d16_Omega_th_data.csv")
+nred = size(d)[1]
+redshift = zeros(nred + 1)
+Ωghalo = zeros(nred + 1)
+Ωgpk = zeros(nred + 1)
+Ωth = zeros(nred + 1)
+Ωthu = zeros(nred + 1)
+Ωthl = zeros(nred + 1)
+ΩthB1 = zeros(nred + 1)
+for ired = 1:nred+1
+   if ired == 1
+      z = 0 # Add z=0 which is not included in the data file
+   else
+      z = d.z[ired-1]
+   end
+   redshift[ired] = z
+   # Define functions to return linear and non-linear power spectra
+   # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
+   # return power spectra in units of Mpc^3 (no 1/h^3).
+   pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
+   pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
+   lnk = log(1e-4):0.1:log(100)
+   pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
+   pknl = Spline1D(exp.(lnk), pknl_class.(exp.(lnk)))
+   # %% Compute Ωgrav from non-linear total matter P(k)
+   Ωgpk[ired] = ograv_pk(pknl, z, Ωm)
+   # %% Compute Ωgrav from Halos, excluding the neutrino contribution
+   Ωghalo[ired] = ograv_halo(pkcb, z, Ωm, Ωcb)
+   # %% Compute Ωtherm from Halos, excluding the neutrino contribution
+   Ωth[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb)
+   # %% Compute Ωtherm for upper and lower 68% confidence level in B
+   Ωthl[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.315)
+   Ωthu[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.221)
+   # %% Compute Ωtherm for no mass bias case (B=1) for comparison
+   ΩthB1[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1)
+   # %% Compute Ωtherm for Komatsu-Seljak profile
+   # ΩthB1[ired] = otherm_ks(pkcb, z, Ωm, 0.157, Ωcb)
+end
 
 #%% Plot results and save to figure3.pdf
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
-lnMh = log(1e11):0.1:log(5e15)
-p = plot(
-   lnMh,
-   -fb * dΩgdlnMh.(lnMh),
-   xaxis = :log,
-   yaxis = :log,
-   xlab = "Halo Mass [M⊙/h]",
-   ylab = L"d\Omega/dlnM",
-   lab = L"f_b|\Omega_{grav}^{halo}|",
+ii = findall(x -> x < 1, d.z)
+p = scatter(
+   d.z[ii],
+   -d.Omega_th[ii] ./ Ωghalo[ii.+1] / fb,
+   yerror = (
+      -(d.Omega_th .- d.Omega_th_low) ./ Ωghalo[2:end] / fb,
+      -(d.Omega_th_up .- d.Omega_th) ./ Ωghalo[2:end] / fb,
+   ),
+   ms = 5,
+   c = 1,
+   #xticks = (1:4, string.(1:4)),
+   ylims = [0.1, 1.6],
+   xlab = "Redshift, z",
+   ylab = L"\Omega_{th}/(-f_b\Omega_{grav}^{halo})",
+   lab = "Data",
    legend = :topright,
    legendfontsize = 12,
    labelfontsize = 15,
-   lw = 5,
-   c = :green,
-   ls = :dashdot,
 )
-p = plot!(lnMh, dΩthlnMh.(lnMh), lw = 5, c = 1)
+ii = findall(x -> x > 1, d.z)
+u = zeros(length(ii))
+v = -0.1 * ones(length(ii))
+p = quiver!(
+   d.z[ii],
+   -d.Omega_th_up[ii] ./ Ωghalo[ii.+1] / fb,
+   quiver = (u, v),
+   c = 1,
+)
+p = plot!(
+   redshift,
+   -Ωth ./ Ωghalo / fb,
+   ribbon = (-(Ωth - Ωthl) ./ Ωghalo / fb, -(Ωthu - Ωth) ./ Ωghalo / fb),
+   lab = L"B=1.27_{-0.04}^{+0.05}",
+   lw = 5,
+   c = 1,
+)
+p = plot!(redshift, -ΩthB1 ./ Ωghalo / fb, ls = :dash, lab = L"B=1", lw = 5)
 savefig("figure3.pdf")
 display(p)
 
