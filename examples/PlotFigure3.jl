@@ -42,7 +42,6 @@ d = CSV.read("data/d16_Omega_th_data.csv")
 nred = size(d)[1]
 redshift = zeros(nred + 1)
 Ωghalo = zeros(nred + 1)
-Ωgpk = zeros(nred + 1)
 Ωth = zeros(nred + 1)
 Ωthu = zeros(nred + 1)
 Ωthl = zeros(nred + 1)
@@ -58,12 +57,8 @@ for ired = 1:nred+1
    # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
    # return power spectra in units of Mpc^3 (no 1/h^3).
    pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
-   pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
    lnk = log(1e-4):0.1:log(100)
    pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
-   pknl = Spline1D(exp.(lnk), pknl_class.(exp.(lnk)))
-   # %% Compute Ωgrav from non-linear total matter P(k)
-   Ωgpk[ired] = ograv_pk(pknl, z, Ωm)
    # %% Compute Ωgrav from Halos, excluding the neutrino contribution
    Ωghalo[ired] = ograv_halo(pkcb, z, Ωm, Ωcb)
    # %% Compute Ωtherm from Halos, excluding the neutrino contribution
