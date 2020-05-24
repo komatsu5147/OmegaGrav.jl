@@ -43,12 +43,13 @@ z = 0
 # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
 # return power spectra in units of Mpc^3 (no 1/h^3).
 pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
+# Spline interpolate in log(k)
 lnk = log(1e-4):0.1:log(100)
-pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
+pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
 # %% Define a function to return dΩgrav/dlnMh from Halos, excluding the neutrino contribution
-dΩgdlnMh(lnMh) = dogravdlnMh(pkcb, z, Ωm, lnMh, Ωcb)
+dΩgdlnMh(lnMh) = dogravdlnMh(x -> pkcb(log(x)), z, Ωm, lnMh, Ωcb)
 # %% Define a function to return dΩtherm/dlnMh from Halos, excluding the neutrino contribution
-dΩthdlnMh(lnMh) = dothermdlnMh(pkcb, z, Ωm, h0, lnMh, Ωcb)
+dΩthdlnMh(lnMh) = dothermdlnMh(x -> pkcb(log(x)), z, Ωm, h0, lnMh, Ωcb)
 
 #%% Plot results and save to figure2.pdf
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
@@ -70,21 +71,14 @@ p = plot(
    ylims = [1e-10, 1e-8],
    xlims = [1e11, 5e15],
 )
-p = plot!(
-   exp.(lnMh),
-   dΩthdlnMh.(lnMh),
-   lw = 5,
-   c = 1,
-   lab = L"\Omega_{th}",
-)
+p = plot!(exp.(lnMh), dΩthdlnMh.(lnMh), lw = 5, c = 1, lab = L"\Omega_{th}")
 
 # %% Compute dΩgrav/dlnMh and dΩtherm/dlnMh at z = 1
 z = 1
 pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
-lnk = log(1e-4):0.1:log(100)
-pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
-dΩgdlnMh(lnMh) = -fb * dogravdlnMh(pkcb, z, Ωm, lnMh, Ωcb)
-dΩthdlnMh(lnMh) = dothermdlnMh(pkcb, z, Ωm, h0, lnMh, Ωcb)
+pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
+dΩgdlnMh(lnMh) = -fb * dogravdlnMh(x -> pkcb(log(x)), z, Ωm, lnMh, Ωcb)
+dΩthdlnMh(lnMh) = dothermdlnMh(x -> pkcb(log(x)), z, Ωm, h0, lnMh, Ωcb)
 p = plot!(
    exp.(lnMh),
    dΩgdlnMh.(lnMh),

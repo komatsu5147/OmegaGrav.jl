@@ -58,18 +58,19 @@ for ired = 1:nred+1
    # return power spectra in units of Mpc^3 (no 1/h^3).
    pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
    pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
+   # Spline interpolate in log(k)
    lnk = log(1e-4):0.1:log(100)
-   pkcb = Spline1D(exp.(lnk), pkcb_class.(exp.(lnk)))
-   pknl = Spline1D(exp.(lnk), pknl_class.(exp.(lnk)))
+   pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
+   pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
    # %% Compute Ωgrav from non-linear total matter P(k)
-   Ωgpk[ired] = ograv_pk(pknl, z, Ωm)
+   Ωgpk[ired] = ograv_pk(x -> pknl(log(x)), z, Ωm)
    # %% Compute Ωgrav from Halos, excluding the neutrino contribution
-   Ωghalo[ired] = ograv_halo(pkcb, z, Ωm, Ωcb)
+   Ωghalo[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb)
    # %% Compute Ωtherm from Halos, excluding the neutrino contribution
-   Ωth[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb)
+   Ωth[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb)
    # %% Compute Ωtherm for upper and lower 68% confidence level in B
-   Ωthl[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.315)
-   Ωthu[ired] = otherm_upp(pkcb, z, Ωm, h0, Ωcb, massbias = 1.221)
+   Ωthl[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.315)
+   Ωthu[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.221)
 end
 
 #%% Plot results and save to figure1.pdf
@@ -78,6 +79,7 @@ p = scatter(
    (d.z, d.Omega_th),
    yerror = (d.Omega_th .- d.Omega_th_low, d.Omega_th_up .- d.Omega_th),
    ms = 5,
+   c = 1,
    xlims = [0, 1.5],
    ylims = [1e-9, 1e-6],
    yaxis = :log,

@@ -22,8 +22,8 @@ pknl = Spline1D(d[:, 1], d[:, 2])
 # %% Compute Ωgrav
 println("redshift = ", z)
 # Linear matter power spectrum
-Ωgrav_pklin = ograv_pk(pk, z, Ωm)
+Ωgrav_pklin = ograv_pk(x -> pk(x), z, Ωm)
 println("Ωgrav(linear pk) = ", Ωgrav_pklin)
 # Non-linear matter power spectrum
-Ωgrav_pknl = ograv_pk(pknl, z, Ωm)
+Ωgrav_pknl = ograv_pk(x -> pknl(x), z, Ωm)
 println("Ωgrav(non-linear pk) = ", Ωgrav_pknl)
