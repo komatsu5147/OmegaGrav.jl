@@ -54,7 +54,7 @@ for ired = 1:nred
    pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
    pklin_class(kovh) = cosmo.pk_lin(kovh * h0, z) * h0^3
    # Spline interpolate in log(k)
-   lnk = log(1e-4):0.1:log(100)
+   lnk = log(1e-4):0.05:log(100)
    pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
    pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
    pklin = Spline1D(lnk, pklin_class.(exp.(lnk)))

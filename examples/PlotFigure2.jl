@@ -44,7 +44,7 @@ z = 0
 # return power spectra in units of Mpc^3 (no 1/h^3).
 pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
 # Spline interpolate in log(k)
-lnk = log(1e-4):0.1:log(100)
+lnk = log(1e-4):0.05:log(100)
 pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
 # %% Define a function to return dΩgrav/dlnMh from Halos, excluding the neutrino contribution
 dΩgdlnMh(lnMh) = dogravdlnMh(x -> pkcb(log(x)), z, Ωm, lnMh, Ωcb)
