@@ -52,7 +52,7 @@ function otherm_upp(
    c, γ, α, β, P0 = [1.81, 0.31, 1.33, 4.13, 6.41]
    upp(x) =
       x^2 * P0 * (0.7 / h0)^1.5 * (c * x)^(-γ) * (1 + (c * x)^α)^((γ - β) / α)
-   uppint, err = hquadrature(upp, 0, xmax)
+   uppint, err = quadde(upp, 0, xmax)
    # %% Compute ρth = \int dlnM dn/dlnM \int dV Pe, in units of h^2 eV/cm^3
    function dρdlnMh(lnMh)
       αp = 0.12
@@ -65,7 +65,7 @@ function otherm_upp(
          (exp(lnMh) / massbias / 3e14 / 0.7)^(2 / 3 + αp)
       dρdlnMh = spl(lnMh) * Pe * 4π * RΔh^3 / massbias
    end
-   ρe, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
+   ρe, err = quadde(dρdlnMh, log(Mmin), log(Mmax))
    Y = 0.24 # helium abundance
    Ωtherm = (8 - 5Y) / (4 - 2Y) * ρe * uppint / ρceVcm3
 end
@@ -135,7 +135,7 @@ function otherm_ks(
    ksint = zeros(25)
    for c = 1:25
       ks(x) = x^2 * ygas(x, c)^γ(c)
-      ksint[c], err = hquadrature(ks, 0, xmax * c) # integrated out to r = xmax*r200m or xmax*rvir
+      ksint[c], err = quadde(ks, 0, xmax * c) # integrated out to r = xmax*r200m or xmax*rvir
    end
    c = 1:25
    ksints = Spline1D(c, ksint)
@@ -155,6 +155,6 @@ function otherm_ks(
       dρdlnMh =
          spl(lnMh) * GN * exp(2 * lnMh) / RΔh * η0(c) / 3 * ρgnorm * ksints(c) # in units of h^2 M⊙/Mpc^3
    end
-   res, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
+   res, err = quadde(dρdlnMh, log(Mmin), log(Mmax))
    Ωtherm = res / ρc
 end

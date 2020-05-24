@@ -1,7 +1,7 @@
 # The functions dogravdlnMh() and dothermdlnMh() are needed only for "PlotFigure2.jl"
 using MatterPower
 using HaloMF
-using HCubature
+using DoubleExponentialFormulas
 
 function dogravdlnMh(
    pk,
@@ -48,6 +48,7 @@ function dothermdlnMh(
    Ωcb = Ωm;
    massbias = 1.266,
    t10MF = false,
+   xmax = 6.0,
 )
    ρc = 2.775e11 # in units of h^2 M⊙/Mpc^3
    ρceVcm3 = 1.05375e4 # in units of h^2 eV/cm^3
@@ -61,7 +62,7 @@ function dothermdlnMh(
    c, γ, α, β, P0 = [1.81, 0.31, 1.33, 4.13, 6.41]
    upp(x) =
       x^2 * P0 * (0.7 / h0)^1.5 * (c * x)^(-γ) * (1 + (c * x)^α)^((γ - β) / α)
-   uppint, err = hquadrature(upp, 0, 6)
+   uppint, err = quadde(upp, 0, xmax)
    # %% Compute ρth = \int dlnM dn/dlnM \int dV Pe, in units of h^2 eV/cm^3
    αp = 0.12
    E2 = Ωm * (1 + z)^3 + 1 - Ωm # for a flat Universe
@@ -135,7 +136,7 @@ function Ag(c::Real; method = "poly4")
             cos(x / c) * (cosint((1 / c + 1) * x) - cosint(x / c)) -
             sin(x) / (1 / c + 1) / x
          )^2
-      res, err = hquadrature(u2, 0, 100)
+      res, err = quadde(u2, 0, Inf)
       Ag = res / π / f^2
    else # 4th order polynomial fit
       y = c - 5

@@ -71,6 +71,6 @@ function onehalo(
          )^2 # x = kR, where R is either comoving Rvir or R200m
       dPdlnMh = spl(lnMh) * exp(2 * lnMh) * u2 / f^2
    end
-   res, err = hquadrature(dPdlnMh, log(Mmin), log(Mmax))
+   res, err = quadde(dPdlnMh, log(Mmin), log(Mmax))
    pk_1halo = res / (ρc * Ωcb)^2 # in h^-3 Mpc^3
 end
