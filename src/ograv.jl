@@ -118,7 +118,7 @@ function Ag(c::Real; method = "poly4")
             cos(x / c) * (cosint((1 / c + 1) * x) - cosint(x / c)) -
             sin(x) / (1 / c + 1) / x
          )^2
-      res, err = quadde(u2, 0, Inf)
+      res, err = quadde(u2, 0, 100)
       Ag = res / π / f^2
    else # 4th order polynomial fit
       y = c - 5

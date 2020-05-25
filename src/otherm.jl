@@ -20,7 +20,7 @@ Comoving density parameter of thermal energy of ionized baryonsgas in collapsed 
 - `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
 - `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
-- `xmax::Real=6.0`: pressure profile is integrated up to ``r = xmax * r500``.  
+- `xmax::Real=6.0`: pressure profile is integrated up to ``r = xmax * r500``.
 """
 function otherm_upp(
    pk,
@@ -52,7 +52,7 @@ function otherm_upp(
    c, γ, α, β, P0 = [1.81, 0.31, 1.33, 4.13, 6.41]
    upp(x) =
       x^2 * P0 * (0.7 / h0)^1.5 * (c * x)^(-γ) * (1 + (c * x)^α)^((γ - β) / α)
-   uppint, err = hquadrature(upp, 0, xmax)
+   uppint, err = quadde(upp, 0, xmax)
    # %% Compute ρth = \int dlnM dn/dlnM \int dV Pe, in units of h^2 eV/cm^3
    function dρdlnMh(lnMh)
       αp = 0.12
@@ -92,7 +92,7 @@ Comoving density parameter of thermal energy of ionized baryonsgas in collapsed 
 - `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
-- `xmax::Real=3.0`: pressure profile is integrated up to ``r = xmax * c * rs = xmax * r200m (if virial = false) or rvir (if virial = true)``.  
+- `xmax::Real=3.0`: pressure profile is integrated up to ``r = xmax * c * rs = xmax * r200m (if virial = false) or rvir (if virial = true)``.
 """
 function otherm_ks(
    pk,
@@ -104,7 +104,7 @@ function otherm_ks(
    Mmax = 5e15,
    virial = false,
    t10MF = false,
-   xmax = 3.0, 
+   xmax = 3.0,
 )
    ρc = 2.775e11 # in units of h^2 M⊙/Mpc^3
    GN = 3 / 8π / 2998^2 / ρc # = 4.786e-20 Mpc/M⊙ is Newton's constant
@@ -135,7 +135,7 @@ function otherm_ks(
    ksint = zeros(25)
    for c = 1:25
       ks(x) = x^2 * ygas(x, c)^γ(c)
-      ksint[c], err = hquadrature(ks, 0, xmax * c) # integrated out to r = xmax*r200m or xmax*rvir
+      ksint[c], err = quadde(ks, 0, xmax * c) # integrated out to r = xmax*r200m or xmax*rvir
    end
    c = 1:25
    ksints = Spline1D(c, ksint)
