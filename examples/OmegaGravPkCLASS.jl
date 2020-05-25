@@ -14,16 +14,16 @@ z = redshift[ired]
 # %% Read in linear and non-linear power spectra computed by CLASS
 filename = @sprintf("data/matterpower05_z%1d_pk.dat", ired)
 d = readdlm(filename, comments = true)
-pk = Spline1D(d[:, 1], d[:, 2])
+pk_spl = Spline1D(d[:, 1], d[:, 2])
 filename = @sprintf("data/matterpower05_z%1d_pk_nl.dat", ired)
 d = readdlm(filename, comments = true)
-pknl = Spline1D(d[:, 1], d[:, 2])
+pknl_spl = Spline1D(d[:, 1], d[:, 2])
 
 # %% Compute Ωgrav
 println("redshift = ", z)
 # Linear matter power spectrum
-Ωgrav_pklin = ograv_pk(x -> pk(x), z, Ωm)
+Ωgrav_pklin = ograv_pk(x -> pk_spl(x), z, Ωm)
 println("Ωgrav(linear pk) = ", Ωgrav_pklin)
 # Non-linear matter power spectrum
-Ωgrav_pknl = ograv_pk(x -> pknl(x), z, Ωm)
+Ωgrav_pknl = ograv_pk(x -> pknl_spl(x), z, Ωm)
 println("Ωgrav(non-linear pk) = ", Ωgrav_pknl)
