@@ -8,7 +8,7 @@ and [examples/GenerateTable1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tre
 
 The package contains
 - ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav`, of gravitational binding energy computed from a matter power spectrum `pk`. It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Chiang, Makiya, Komatsu & Ménard (in prep)
-- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e10, Mmax=1e16, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 ## Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.
@@ -22,8 +22,8 @@ The package contains
 ## Optional keyword arguments
 - `kmin::Real`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `5e-4`.
 - `kmax::Real`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `3e1`.
-- `Mmin::Real`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `1e10`.
-- `Mmax::Real`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `1e16`.
+- `Mmin::Real`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `1e11`.
+- `Mmax::Real`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `5e15`.
 - `virial::Bool`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`. See [HaloMF.jl](https://github.com/komatsu5147/HaloMF.jl) for definition of these functions.
 
