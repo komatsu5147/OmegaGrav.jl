@@ -62,7 +62,7 @@ function dothermdlnMh(
    c, γ, α, β, P0 = [1.81, 0.31, 1.33, 4.13, 6.41]
    upp(x) =
       x^2 * P0 * (0.7 / h0)^1.5 * (c * x)^(-γ) * (1 + (c * x)^α)^((γ - β) / α)
-   uppint, err = quadde(upp, 0, xmax)
+   uppint, err = hquadrature(upp, 0, xmax)
    # %% Compute ρth = \int dlnM dn/dlnM \int dV Pe, in units of h^2 eV/cm^3
    αp = 0.12
    E2 = Ωm * (1 + z)^3 + 1 - Ωm # for a flat Universe

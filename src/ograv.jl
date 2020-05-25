@@ -17,7 +17,7 @@ Comoving density parameter of gravitational binding energy of large-scale struct
 - `kmax::Real=3e1`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``.
 """
 function ograv_pk(pk, z::Real, Ωm::Real; kmin = 5e-4, kmax = 3e1)
-   res, err = quadde(pk, kmin, kmax)
+   res, err = hquadrature(pk, kmin, kmax)
    halfW = -3 * Ωm * (1 + z) / 2998^2 / 16 / π^2 * res
    Ωgrav = halfW * Ωm
 end
@@ -85,7 +85,7 @@ function ograv_halo(
       c = A0 * (exp(lnMh) / 2e12)^B0 * (1 + z)^C0
       dρdlnMh = 0.5 * spl(lnMh) * GN * exp(2 * lnMh) / RΔh * Ag(c)
    end
-   ρgrav, err = quadde(dρdlnMh, log(Mmin), log(Mmax))
+   ρgrav, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
    halfW = -ρgrav / ρc / Ωcb
    Ωgrav = halfW * Ωcb
 end

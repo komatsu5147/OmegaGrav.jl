@@ -1,4 +1,5 @@
 module OmegaGrav
+using HCubature
 using DoubleExponentialFormulas
 using Dierckx
 using SpecialFunctions

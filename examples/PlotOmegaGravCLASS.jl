@@ -29,13 +29,13 @@ for ired = 1:7
    z = redshift[ired]
    println("redshift = ", z)
    # Linear matter power spectrum
-   Ωgrav_pklin[ired] = ograv_pk(x -> pk(x), z, Ωm)
+   Ωgrav_pklin[ired] = ograv_pk(pk, z, Ωm)
    println("Ωgrav(linear pk) = ", Ωgrav_pklin[ired])
    # Non-linear matter power spectrum
-   Ωgrav_pknl[ired] = ograv_pk(x -> pknl(x), z, Ωm)
+   Ωgrav_pknl[ired] = ograv_pk(pknl, z, Ωm)
    println("Ωgrav(non-linear pk) = ", Ωgrav_pknl[ired])
    # Halos
-   Ωgrav_halo[ired] = ograv_halo(x -> pk(x), z, Ωm)
+   Ωgrav_halo[ired] = ograv_halo(pk, z, Ωm)
    println("Ωgrav(halos) = ", Ωgrav_halo[ired])
 end
 

@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 Dierckx = "39dd38d3-220a-591b-8e3c-4c3a8c710a94"
 DoubleExponentialFormulas = "eb426421-6452-4132-80ef-4b100a757ac5"
+HCubature = "19dc6840-f33b-545b-b366-655c7e3ffd49"
 HaloMF = "0e139a23-195b-4aec-b8fc-e9aa4361bc8d"
 MatterPower = "743831d1-0e6a-4e86-a0c4-1a098a68aca3"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
