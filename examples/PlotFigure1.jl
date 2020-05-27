@@ -2,7 +2,7 @@ using OmegaGrav
 using PyCall
 using CSV
 using Dierckx
-using Plots, LaTeXStrings
+using Plots, Plots.PlotMeasures, LaTeXStrings
 # %% Call the python wrapper for CLASS, `classy`, via PyCall
 classy = pyimport("classy")
 # Create an instance of the CLASS wrapper
@@ -75,6 +75,7 @@ end
 
 #%% Plot results and save to figure1.pdf
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
+Ωb = params["omega_b"] / h0^2
 p = scatter(
    (d.z, d.Omega_th),
    yerror = (d.Omega_th .- d.Omega_th_low, d.Omega_th_up .- d.Omega_th),
@@ -89,6 +90,7 @@ p = scatter(
    legend = :topright,
    legendfontsize = 12,
    labelfontsize = 14,
+   right_margin = 45px,
 )
 p = plot!(
    redshift,
@@ -106,6 +108,21 @@ p = plot!(
    lab = L"-f_b\Omega_{grav}^{halo}",
    ls = :dashdot,
    lw = 2,
+)
+p = plot!(
+   twinx(),
+   redshift,
+   0.2 * Ωth / 1.7755e-8 * 0.049 / Ωb,
+   c = 1,
+   lab = L"-f_b\Omega_{grav}^{halo}",
+   lw = 2,
+   ylab = "Density Weighted Tempeturae [keV]",
+   yaxis = :log,
+   legend = false,
+   xaxis = false,
+   ylims = [1e-9, 1e-6] * 0.2 / 1.7755e-8 * 0.049 / Ωb,
+   xlims = [0, 1.5],
+   yticks = ([1e-2, 1e-1, 1, 10], ["0.01", "0.1", "1", "10"]),
 )
 savefig("figure1.pdf")
 display(p)
