@@ -71,7 +71,7 @@ end
 
 #%% Save table data to table1.csv
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
-t = Tables.table([redshift Ωglin Ωgpk Ωghalo Ωgh12 Ωgh13 Ωgh14 fb * Ωghalo])
+t = Tables.table([redshift Ωglin Ωgpk Ωghalo Ωgh12 Ωgh13 Ωgh14 2 * fb * Ωghalo / 3])
 header = [
    "z",
    "Omega_grav_pklin",
@@ -80,7 +80,7 @@ header = [
    "Omega_grav_halo_Mgt1e12",
    "Omega_grav_halo_Mgt1e13",
    "Omega_grav_halo_Mgt1e14",
-   "Omega_grav_halo_times_fb",
+   "Omega_grav_halo_times_twothirdfb",
 ]
 CSV.write("table1.csv", t, header = header)
 

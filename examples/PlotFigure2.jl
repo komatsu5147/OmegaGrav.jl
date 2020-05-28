@@ -56,12 +56,12 @@ fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
 lnMh = log(1e11):0.1:log(5e15)
 p = plot(
    exp.(lnMh),
-   -fb * dΩgdlnMh.(lnMh),
+   -2 * fb * dΩgdlnMh.(lnMh) / 3,
    xaxis = :log,
    yaxis = :log,
    xlab = "Halo Mass [M⊙/h]",
    ylab = L"d\Omega/d\ln M",
-   lab = L"-f_b\Omega_{grav}^{halo}",
+   lab = L"-2f_b\Omega_{grav}^{halo}/3",
    legend = :topleft,
    legendfontsize = 12,
    labelfontsize = 15,
@@ -77,11 +77,11 @@ p = plot!(exp.(lnMh), dΩthdlnMh.(lnMh), lw = 5, c = 1, lab = L"\Omega_{th}")
 z = 1
 pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
 pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
-dΩgdlnMh(lnMh) = -fb * dogravdlnMh(x -> pkcb(log(x)), z, Ωm, lnMh, Ωcb)
+dΩgdlnMh(lnMh) = dogravdlnMh(x -> pkcb(log(x)), z, Ωm, lnMh, Ωcb)
 dΩthdlnMh(lnMh) = dothermdlnMh(x -> pkcb(log(x)), z, Ωm, h0, lnMh, Ωcb)
 p = plot!(
    exp.(lnMh),
-   dΩgdlnMh.(lnMh),
+   -2 * fb * dΩgdlnMh.(lnMh) / 3,
    lw = 2,
    c = :green,
    ls = :dashdot,

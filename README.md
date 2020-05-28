@@ -7,8 +7,8 @@ If you came here to reproduce the results in the paper (Chiang, Makiya, Komatsu 
 and [examples/GenerateTable1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateTable1.jl) to reproduce Figure 1, 2 and 3 and Table 1 of the paper, respectively. Running these codes requires the python wrapper for CLASS [classy](https://github.com/lesgourg/class_public/wiki/Python-wrapper). The codes call `classy` via `PyCall`.
 
 The package contains
-- ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav`, of gravitational binding energy computed from a matter power spectrum `pk`. It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Chiang, Makiya, Komatsu & Ménard (in prep)
-- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+- ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav`, of gravitational binding energy computed from a matter power spectrum `pk`. It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Equation (15) of Chiang, Makiya, Komatsu & Ménard (in prep)
+- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (19) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 ## Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.

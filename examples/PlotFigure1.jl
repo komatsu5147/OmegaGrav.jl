@@ -103,9 +103,9 @@ p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_{grav}^{total}", lw = 2)
 p = plot!(redshift, -Ωghalo, c = :green, lab = L"-\Omega_{grav}^{halo}", lw = 2)
 p = plot!(
    redshift,
-   -fb * Ωghalo,
+   -2 * fb * Ωghalo / 3,
    c = :green,
-   lab = L"-f_b\Omega_{grav}^{halo}",
+   lab = L"-2f_b\Omega_{grav}^{halo}/3",
    ls = :dashdot,
    lw = 2,
 )
@@ -114,7 +114,6 @@ p = plot!(
    redshift,
    0.2 * Ωth / 1.7755e-8 * 0.049 / Ωb,
    c = 1,
-   lab = L"-f_b\Omega_{grav}^{halo}",
    lw = 2,
    ylab = "Density Weighted Tempeturae [keV]",
    yaxis = :log,

@@ -4,7 +4,7 @@
 Comoving density parameter of gravitational binding energy of large-scale structure of the Universe.
 
 *Reference*: Equation (60) of Fukugita & Peebles, ApJ, 616, 643 (2004)
-- With the redshift evolution factor of Chiang, Makiya, Komatsu & Ménard (in prep)
+- With the redshift evolution factor of Equation (15) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
@@ -27,7 +27,7 @@ end
 
 Comoving density parameter of gravitational binding energy of gravitationally collapsed structures (halos).
 
-*Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+*Reference*: Equation (19) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
@@ -95,7 +95,7 @@ end
 
 Integral of the squared Fourier transform of an NFW density profile, ``(1/π)∫_0^∞ dx |u(x,c)|^2``.
 
-*Reference*: Equation (TBD) of Chiang, Makiya, Komatsu & Ménard (in prep)
+*Reference*: Equation (20) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
 # Arguments
 - `c::Real`: concentration parameter.

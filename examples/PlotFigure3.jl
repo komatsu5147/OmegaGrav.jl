@@ -78,17 +78,17 @@ fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
 ii = findall(x -> x < 1, d.z)
 p = scatter(
    d.z[ii],
-   -d.Omega_th[ii] ./ Ωghalo[ii.+1] / fb,
+   -1.5 * d.Omega_th[ii] ./ Ωghalo[ii.+1] / fb,
    yerror = (
-      -(d.Omega_th .- d.Omega_th_low) ./ Ωghalo[2:end] / fb,
-      -(d.Omega_th_up .- d.Omega_th) ./ Ωghalo[2:end] / fb,
+      -1.5 * (d.Omega_th .- d.Omega_th_low) ./ Ωghalo[2:end] / fb,
+      -1.5 * (d.Omega_th_up .- d.Omega_th) ./ Ωghalo[2:end] / fb,
    ),
    ms = 5,
    c = 1,
    #xticks = (1:4, string.(1:4)),
-   ylims = [0.1, 1.6],
+   ylims = [0.2, 1.5],
    xlab = "Redshift, z",
-   ylab = L"\Omega_{th}/(-f_b\Omega_{grav}^{halo})",
+   ylab = L"\Omega_{th}/(-2f_b\Omega_{grav}^{halo}/3)",
    lab = "Data",
    legend = :topright,
    legendfontsize = 12,
@@ -99,19 +99,28 @@ u = zeros(length(ii))
 v = -0.1 * ones(length(ii))
 p = quiver!(
    d.z[ii],
-   -d.Omega_th_up[ii] ./ Ωghalo[ii.+1] / fb,
+   -1.5 * d.Omega_th_up[ii] ./ Ωghalo[ii.+1] / fb,
    quiver = (u, v),
    c = 1,
 )
 p = plot!(
    redshift,
-   -Ωth ./ Ωghalo / fb,
-   ribbon = (-(Ωth - Ωthl) ./ Ωghalo / fb, -(Ωthu - Ωth) ./ Ωghalo / fb),
+   -1.5 * Ωth ./ Ωghalo / fb,
+   ribbon = (
+      -1.5 * (Ωth - Ωthl) ./ Ωghalo / fb,
+      -1.5 * (Ωthu - Ωth) ./ Ωghalo / fb,
+   ),
    lab = L"B=1.27_{-0.04}^{+0.05}",
    lw = 5,
    c = 1,
 )
-p = plot!(redshift, -ΩthB1 ./ Ωghalo / fb, ls = :dash, lab = L"B=1", lw = 5)
+p = plot!(
+   redshift,
+   -1.5 * ΩthB1 ./ Ωghalo / fb,
+   ls = :dash,
+   lab = L"B=1",
+   lw = 5,
+)
 savefig("figure3.pdf")
 display(p)
 
