@@ -80,25 +80,12 @@ u0 = -W(t0) / 2
 prob = ODEProblem(f, u0, tspan)
 sol_pklin = solve(prob, Tsit5())
 
-#%% Plot results and save to figure3.pdf
-p = plot(
-   a,
-   sol_pknl.(a)[:, 1],
-   lw = 2,
-   xlab = "Scale factor, a",
-   ylab = "Comiving Density Parameters",
-   lab = L"K: Nonlinear",
-   legend = :topleft,
-   legendfontsize = 12,
-   labelfontsize = 15,
-   ylims = [1e-7, 8e-7],
-   xlims = [0.2, 1.0],
-)
-p = plot!(a, -Ωgrav_pknl.(a), lw = 2, lab = L"-W/2: Nonlinear")
-p = plot!(a, sol_pklin.(a)[:, 1], c = 1, lw = 2, ls = :dot, lab = L"K: Linear")
-p = plot!(a, -Ωgrav_pklin.(a), c = 2, lw = 2, ls = :dot, lab = L"-W/2: Linear")
-savefig("figure3.pdf")
-display(p)
+#%% Save table data to table2.csv
+redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
+a = 1 ./ (1 .+ redshift)
+t = Tables.table([redshift sol_pklin.(a) sol_pknl.(a)])
+header = ["z", "Omega_kin_pklin", "Omega_kin_pknl"]
+CSV.write("table2.csv", t, header = header)
 
 # %% Clean CLASS (the equivalent of the struct_free() in the `main`
 # of CLASS. This step is primordial when running in a loop over different
