@@ -36,7 +36,7 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute Ωgrav and Ωtherm at seven redshifts
+# %% Compute Ωtherm at seven redshifts
 redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
 nred = length(redshift)
 Ωth = zeros(nred)

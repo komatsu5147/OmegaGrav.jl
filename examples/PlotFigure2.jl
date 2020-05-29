@@ -67,7 +67,7 @@ p = plot(
    labelfontsize = 15,
    lw = 5,
    c = :green,
-   ls = :dashdot,
+   ls = :dot,
    ylims = [1e-10, 1e-8],
    xlims = [1e11, 5e15],
 )
@@ -84,11 +84,10 @@ p = plot!(
    -2 * fb * dΩgdlnMh.(lnMh) / 3,
    lw = 2,
    c = :green,
-   ls = :dashdot,
+   ls = :dot,
    lab = "",
 )
 p = plot!(exp.(lnMh), dΩthdlnMh.(lnMh), lw = 2, c = 1, lab = "")
-
 savefig("figure2.pdf")
 display(p)
 

@@ -43,6 +43,7 @@ nred = size(d)[1]
 redshift = zeros(nred + 1)
 Ωghalo = zeros(nred + 1)
 Ωgpk = zeros(nred + 1)
+Ωglin = zeros(nred + 1)
 Ωth = zeros(nred + 1)
 Ωthu = zeros(nred + 1)
 Ωthl = zeros(nred + 1)
@@ -58,12 +59,16 @@ for ired = 1:nred+1
    # return power spectra in units of Mpc^3 (no 1/h^3).
    pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
    pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
+   pklin_class(kovh) = cosmo.pk_lin(kovh * h0, z) * h0^3
    # Spline interpolate in log(k)
    lnk = log(1e-4):0.05:log(100)
    pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
    pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
+   pklin = Spline1D(lnk, pklin_class.(exp.(lnk)))
    # %% Compute Ωgrav from non-linear total matter P(k)
    Ωgpk[ired] = ograv_pk(x -> pknl(log(x)), z, Ωm)
+   # %% Compute Ωgrav from linear total matter P(k)
+   Ωglin[ired] = ograv_pk(x -> pklin(log(x)), z, Ωm)
    # %% Compute Ωgrav from Halos, excluding the neutrino contribution
    Ωghalo[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb)
    # %% Compute Ωtherm from Halos, excluding the neutrino contribution
@@ -76,6 +81,10 @@ end
 #%% Plot results and save to figure1.pdf
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
 Ωb = params["omega_b"] / h0^2
+ΔΩg = Ωgpk - Ωglin
+y = 0.5 * (Ωghalo + ΔΩg) * (-2fb / 3)
+Δyu = ΔΩg * (-2fb / 3) - y
+Δyl = y - Ωghalo * (-2fb / 3)
 p = scatter(
    (d.z, d.Omega_th),
    yerror = (d.Omega_th .- d.Omega_th_low, d.Omega_th_up .- d.Omega_th),
@@ -100,14 +109,13 @@ p = plot!(
    lab = L"B=1.27_{-0.04}^{+0.05}",
 )
 p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_{grav}^{total}", lw = 2)
-p = plot!(redshift, -Ωghalo, c = :green, lab = L"-\Omega_{grav}^{halo}", lw = 2)
+p = plot!(redshift, -Ωghalo, c = :black, ls = :dash, lab = L"-\Omega_{grav}^{halo}", lw = 2)
 p = plot!(
    redshift,
-   -2 * fb * Ωghalo / 3,
+   y,
+   ribbon = (Δyl, Δyu),
+   lab = L"-2f_b\Omega_{grav}/3",
    c = :green,
-   lab = L"-2f_b\Omega_{grav}^{halo}/3",
-   ls = :dashdot,
-   lw = 2,
 )
 p = plot!(
    twinx(),

@@ -36,7 +36,7 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute Ωgrav and Ωtherm at seven redshifts
+# %% Compute Ωgrav at seven redshifts
 redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
 nred = length(redshift)
 Ωgpk = zeros(nred)
@@ -71,7 +71,7 @@ end
 
 #%% Save table data to table1.csv
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
-t = Tables.table([redshift Ωglin Ωgpk Ωghalo Ωgh12 Ωgh13 Ωgh14 2 * fb * Ωghalo / 3])
+t = Tables.table([redshift Ωglin Ωgpk Ωghalo Ωgh12 Ωgh13 Ωgh14 2 * fb * Ωghalo / 3 2 * fb * (Ωgpk - Ωglin) / 3])
 header = [
    "z",
    "Omega_grav_pklin",
@@ -81,6 +81,7 @@ header = [
    "Omega_grav_halo_Mgt1e13",
    "Omega_grav_halo_Mgt1e14",
    "Omega_grav_halo_times_twothirdfb",
+   "Omega_grav_pkdiff_times_twothirdfb",
 ]
 CSV.write("table1.csv", t, header = header)
 
