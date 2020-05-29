@@ -1,8 +1,8 @@
 using OmegaGrav
 using PyCall
 using Dierckx
-using Plots, LaTeXStrings
 using OrdinaryDiffEq
+using Tables, CSV
 # %% Call the python wrapper for CLASS, `classy`, via PyCall
 classy = pyimport("classy")
 # Create an instance of the CLASS wrapper
