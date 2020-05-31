@@ -1,5 +1,5 @@
 """
-    onehalo(pk, z, Ωm, k[, Ωcb]; Mmin = 1e11, Mmax = 5e15, virial = false, t10MF = false)
+    onehalo(pk, z, Ωm, k[, Ωcb]; Mmin = 1e11, Mmax = 5e15, virial = false, t10MF = false, xmax = 1)
 
 This function returns a value of the 1-halo term power spectrum (in units of Mpc^3/h^3) at a specified value of the comoving wavenumber (in units of h/Mpc).
 
@@ -21,6 +21,7 @@ This function returns a value of the 1-halo term power spectrum (in units of Mpc
 - `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM (M/ρ)^2 |u(kR,c)|^2``.
 - `virial::Bool=false`: if `true`, use the virial overdensity `Δvir`. If `false` (the default), use `Δm=200`.
 - `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
+- `xmax::Real=1`: Fourier transform of the NFW density profile is integrated up to ``r = xmax * c * rs = xmax * r200m (if virial = false) or rvir (if virial = true)``.
 """
 function onehalo(
    pk,
@@ -32,6 +33,7 @@ function onehalo(
    Mmax = 5e15,
    virial = false,
    t10MF = false,
+   xmax = 1, 
 )
    ρc = 2.775e11 # in units of h^2 M⊙/Mpc^3
    if virial # Determine Δm used by the mass function
@@ -60,15 +62,17 @@ function onehalo(
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωcb * Δm)) / (1 + z) # in h^-1 Mpc
          A0, B0, C0 = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
       end
-      c = A0 * (exp(lnMh) / 2e12)^B0 * (1 + z)^C0
-      f = log(1 + c) - c / (1 + c)
-      x = k * RΔh * (1 + z) # IMPORTANT (1+z)
+      cnfw = A * (exp(lnMh) / 2e12)^B * (1 + z)^C
+      f = log(1 + cnfw) - cnfw / (1 + cnfw)
+      c = xmax * cnfw
+      # x = k*rs*(1+z), where rs is the physical NFW scale radius
+      x = exp(lnk[ik]) * RΔh * (1 + z) / cnfw # IMPORTANT (1+z)
       u2 =
          (
-            sin(x / c) * (sinint((1 / c + 1) * x) - sinint(x / c)) +
-            cos(x / c) * (cosint((1 / c + 1) * x) - cosint(x / c)) -
-            sin(x) / (1 / c + 1) / x
-         )^2 # x = kR, where R is either comoving Rvir or R200m
+            sin(x) * (sinint((c + 1) * x) - sinint(x)) +
+            cos(x) * (cosint((c + 1) * x) - cosint(x)) -
+            sin(x * c) / (c + 1) / x
+         )^2 
       dPdlnMh = spl(lnMh) * exp(2 * lnMh) * u2 / f^2
    end
    res, err = hquadrature(dPdlnMh, log(Mmin), log(Mmax))
