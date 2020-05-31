@@ -66,7 +66,7 @@ function onehalo(
       f = log(1 + cnfw) - cnfw / (1 + cnfw)
       c = xmax * cnfw
       # x = k*rs*(1+z), where rs is the physical NFW scale radius
-      x = exp(lnk[ik]) * RΔh * (1 + z) / cnfw # IMPORTANT (1+z)
+      x = k * RΔh * (1 + z) / cnfw # IMPORTANT (1+z)
       u2 =
          (
             sin(x) * (sinint((c + 1) * x) - sinint(x)) +
