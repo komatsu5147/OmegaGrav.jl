@@ -1,7 +1,7 @@
 """
    otherm_upp(pk, z, Ωm, h0[, Ωcb=Ωm]; massbias = 1.266, Mmin = 1e11, Mmax = 5e15, t10MF = false, xmax = 6.0)
 
-Comoving density parameter of thermal energy of ionized baryonsgas in collapsed structures using Planck's universal pressure profile.
+Comoving density parameter of thermal energy of ionized baryons in collapsed structures using Planck's universal pressure profile.
 
 *Reference*: Equation (3-7) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
@@ -73,7 +73,7 @@ end
 """
    otherm_ks(pk, z, Ωm, fb[, Ωcb=Ωm]; Mmin = 1e11, Mmax = 5e15, virial = false, t10MF = false, xmax = 3.0)
 
-Comoving density parameter of thermal energy of ionized baryonsgas in collapsed structures using Komatsu-Seljak pressure profile.
+Comoving density parameter of thermal energy of ionized baryons in collapsed structures using Komatsu-Seljak pressure profile.
 
 *Reference*: Equation (3-7) of Chiang, Makiya, Komatsu & Ménard (in prep)
 
