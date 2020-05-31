@@ -62,7 +62,7 @@ function onehalo(
          RΔh = cbrt(exp(lnMh) * 3 / 4π / (ρc * Ωcb * Δm)) / (1 + z) # in h^-1 Mpc
          A0, B0, C0 = 10.14, -0.081, -1.01 # Amean, Bmean, Cmean in Table 1 of Duffy et al.
       end
-      cnfw = A * (exp(lnMh) / 2e12)^B * (1 + z)^C
+      cnfw = A0 * (exp(lnMh) / 2e12)^B0 * (1 + z)^C0
       f = log(1 + cnfw) - cnfw / (1 + cnfw)
       c = xmax * cnfw
       # x = k*rs*(1+z), where rs is the physical NFW scale radius
