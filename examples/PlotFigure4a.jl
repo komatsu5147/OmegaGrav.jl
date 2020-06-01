@@ -53,7 +53,7 @@ for ired = 1:nred+1
       z = d.z[ired-1]
    end
    redshift[ired] = z
-   # Define functions to return linear and non-linear power spectra
+   # Define functions to return linear baryon+CDM power spectrum
    # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
    # return power spectra in units of Mpc^3 (no 1/h^3).
    pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
@@ -73,7 +73,7 @@ for ired = 1:nred+1
    # ΩthB1[ired] = otherm_ks(x -> pkcb(log(x)), z, Ωm, 0.157, Ωcb)
 end
 
-#%% Plot results and save to figure4.pdf
+#%% Plot results and save to figure4a.pdf
 fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
 ii = findall(x -> x < 1, d.z)
 p = scatter(
@@ -120,7 +120,8 @@ p = plot!(
    lab = L"B=1",
    lw = 5,
 )
-savefig("figure4.pdf")
+p = hline!([1], c = :grey, lab="", lw = 2)
+savefig("figure4a.pdf")
 display(p)
 
 # %% Clean CLASS (the equivalent of the struct_free() in the `main`
