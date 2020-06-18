@@ -123,7 +123,7 @@ p = plot!(
    0.2 * Ωth / 1.7755e-8 * 0.049 / Ωb,
    c = 1,
    lw = 2,
-   ylab = "Density Weighted Tempeturae [keV]",
+   ylab = "Density Weighted Temperature [keV]",
    yaxis = :log,
    legend = false,
    xaxis = false,
