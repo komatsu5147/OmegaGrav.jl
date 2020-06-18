@@ -37,9 +37,17 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute Ωgrav and Ωtherm at various redshifts
+# %% Compute the analytical linear theory result for K/W
+# Reference: Equation (12) of Davis, Miller, White, ApJ, 490, 63 (1997).
 zini = 9
 a = 1/(1+zini):0.01:1.0 # scale factor
+sol_δθ = setup_growth(Ωm, 1 - Ωm)
+KovW = zeros(length(a))
+for i = 1:length(a)
+   KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
+end
+
+# %% Compute Ωgrav and Ωtherm at various redshifts
 nred = length(a)
 Ωgpk = zeros(nred)
 Ωglin = zeros(nred)
@@ -69,14 +77,14 @@ t0 = tspan[1]
 W(x) = 2 * Ωgrav_pknl(x)
 dWda(x) = 2 * derivative(Ωgrav_pknl, x)
 f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = -W(t0) / 2
+u0 = KovW[1] * W(t0)
 prob = ODEProblem(f, u0, tspan)
 sol_pknl = solve(prob, Tsit5())
-## Linear P(k)
+## Linear P(k): This result must agree with the analytical linear theory result
 W(x) = 2 * Ωgrav_pklin(x)
 dWda(x) = 2 * derivative(Ωgrav_pklin, x)
 f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = -W(t0) / 2
+u0 = KovW[1] * W(t0)
 prob = ODEProblem(f, u0, tspan)
 sol_pklin = solve(prob, Tsit5())
 
@@ -97,6 +105,7 @@ p = plot(
 p = plot!(a, -Ωgrav_pknl.(a), lw = 2, lab = L"-W/2: Nonlinear")
 p = plot!(a, sol_pklin.(a)[:, 1], c = 1, lw = 2, ls = :dot, lab = L"K: Linear")
 p = plot!(a, -Ωgrav_pklin.(a), c = 2, lw = 2, ls = :dot, lab = L"-W/2: Linear")
+# p = plot!(a, KovW .* W.(a), ls = :dot, lab = L"K: Linear,~Analytical")
 savefig("figure3.pdf")
 display(p)
 
