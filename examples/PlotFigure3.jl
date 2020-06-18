@@ -47,7 +47,7 @@ for i = 1:length(a)
    KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
 end
 
-# %% Compute Ωgrav and Ωtherm at various redshifts
+# %% Compute `Ωgrav = Ωm * W / 2` at various redshifts
 nred = length(a)
 Ωgpk = zeros(nred)
 Ωglin = zeros(nred)
