@@ -1,4 +1,5 @@
 using OmegaGrav
+using MatterPower
 using PyCall
 using Dierckx
 using OrdinaryDiffEq
@@ -37,10 +38,18 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute Ωgrav and Ωtherm at various redshifts
+# %% Compute the analytical linear theory result for K/W
+# Reference: Equation (12) of Davis, Miller, White, ApJ, 490, 63 (1997).
 zini = 9
 a = 1/(1+zini):0.01:1.0 # scale factor
 nred = length(a)
+sol_δθ = setup_growth(Ωm, 1 - Ωm)
+KovW = zeros(nred)
+for i = 1:nred
+   KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
+end
+
+# %% Compute `Ωgrav = Ωm * W / 2` at various redshifts
 Ωgpk = zeros(nred)
 Ωglin = zeros(nred)
 for ired = 1:nred
@@ -69,14 +78,14 @@ t0 = tspan[1]
 W(x) = 2 * Ωgrav_pknl(x)
 dWda(x) = 2 * derivative(Ωgrav_pknl, x)
 f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = -W(t0) / 2
+u0 = KovW[1] * W(t0)
 prob = ODEProblem(f, u0, tspan)
 sol_pknl = solve(prob, Tsit5())
-## Linear P(k)
+## Linear P(k): This result must agree with the analytical linear theory result
 W(x) = 2 * Ωgrav_pklin(x)
 dWda(x) = 2 * derivative(Ωgrav_pklin, x)
 f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = -W(t0) / 2
+u0 = KovW[1] * W(t0)
 prob = ODEProblem(f, u0, tspan)
 sol_pklin = solve(prob, Tsit5())
 
@@ -84,7 +93,7 @@ sol_pklin = solve(prob, Tsit5())
 redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
 a = 1 ./ (1 .+ redshift)
 t = Tables.table([redshift sol_pklin.(a) sol_pknl.(a)])
-header = ["z", "Omega_kin_pklin", "Omega_kin_pknl"]
+header = ["z", "Omega_K_pklin", "Omega_K_pknl"]
 CSV.write("table2.csv", t, header = header)
 
 # %% Clean CLASS (the equivalent of the struct_free() in the `main`

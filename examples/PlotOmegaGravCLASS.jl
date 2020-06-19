@@ -25,7 +25,7 @@ for ired = 1:7
    d = readdlm(filename, comments = true)
    pknl = Spline1D(d[:, 1], d[:, 2])
 
-   # %% Compute Ωgrav
+   # %% Compute `Ωgrav = Ωm * W / 2`
    z = redshift[ired]
    println("redshift = ", z)
    # Linear matter power spectrum

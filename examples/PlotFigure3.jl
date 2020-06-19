@@ -1,8 +1,8 @@
 using OmegaGrav
 using PyCall
+using CSV
 using Dierckx
 using Plots, LaTeXStrings
-using OrdinaryDiffEq
 # %% Call the python wrapper for CLASS, `classy`, via PyCall
 classy = pyimport("classy")
 # Create an instance of the CLASS wrapper
@@ -12,7 +12,7 @@ deg_ncdm = true # 3 massive neutrinos with degenerate mass?
 params = Dict(
    "output" => "mPk",
    "P_k_max_h/Mpc" => 100,
-   "z_pk" => 10,
+   "z_pk" => 5,
    "non linear" => "halofit",
    "A_s" => 2.097e-9,
    "n_s" => 0.9652,
@@ -37,75 +37,90 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute the analytical linear theory result for K/W
-# Reference: Equation (12) of Davis, Miller, White, ApJ, 490, 63 (1997).
-zini = 9
-a = 1/(1+zini):0.01:1.0 # scale factor
-sol_δθ = setup_growth(Ωm, 1 - Ωm)
-KovW = zeros(length(a))
-for i = 1:length(a)
-   KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
-end
-
-# %% Compute `Ωgrav = Ωm * W / 2` at various redshifts
-nred = length(a)
-Ωgpk = zeros(nred)
-Ωglin = zeros(nred)
-for ired = 1:nred
-   z = 1 / a[ired] - 1
-   # Define functions to return linear and non-linear power spectra
+# %% Compute `Ωgrav = Ωm * W / 2` and Ωtherm at redshifts of the data points
+d = CSV.read("data/d16_Omega_th_data.csv")
+nred = size(d)[1]
+redshift = zeros(nred + 1)
+Ωghalo = zeros(nred + 1)
+Ωth = zeros(nred + 1)
+Ωthu = zeros(nred + 1)
+Ωthl = zeros(nred + 1)
+ΩthB1 = zeros(nred + 1)
+for ired = 1:nred+1
+   if ired == 1
+      z = 0 # Add z=0 which is not included in the data file
+   else
+      z = d.z[ired-1]
+   end
+   redshift[ired] = z
+   # Define functions to return linear baryon+CDM power spectrum
    # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
    # return power spectra in units of Mpc^3 (no 1/h^3).
-   pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
-   pklin_class(kovh) = cosmo.pk_lin(kovh * h0, z) * h0^3
+   pkcb_class(kovh) = cosmo.pk_cb_lin(kovh * h0, z) * h0^3
    # Spline interpolate in log(k)
    lnk = log(1e-4):0.05:log(100)
-   pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
-   pklin = Spline1D(lnk, pklin_class.(exp.(lnk)))
-   # %% Compute Ωgrav from non-linear total matter P(k)
-   Ωgpk[ired] = ograv_pk(x -> pknl(log(x)), z, Ωm)
-   # %% Compute Ωgrav from linear total matter P(k)
-   Ωglin[ired] = ograv_pk(x -> pklin(log(x)), z, Ωm)
+   pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
+   # %% Compute Ωgrav from Halos, excluding the neutrino contribution
+   Ωghalo[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb)
+   # %% Compute Ωtherm from Halos, excluding the neutrino contribution
+   Ωth[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb)
+   # %% Compute Ωtherm for upper and lower 68% confidence level in B
+   Ωthl[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.315)
+   Ωthu[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.221)
+   # %% Compute Ωtherm for no mass bias case (B=1) for comparison
+   ΩthB1[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1)
+   # %% Compute Ωtherm for Komatsu-Seljak profile
+   # ΩthB1[ired] = otherm_ks(x -> pkcb(log(x)), z, Ωm, 0.157, Ωcb)
 end
-Ωgrav_pklin = Spline1D(a, Ωglin)
-Ωgrav_pknl = Spline1D(a, Ωgpk)
-
-# %% Solve the Layzer-Irvine equation
-tspan = (1 / (1 + zini), 1.0)
-t0 = tspan[1]
-## Non-linear P(k)
-W(x) = 2 * Ωgrav_pknl(x)
-dWda(x) = 2 * derivative(Ωgrav_pknl, x)
-f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = KovW[1] * W(t0)
-prob = ODEProblem(f, u0, tspan)
-sol_pknl = solve(prob, Tsit5())
-## Linear P(k): This result must agree with the analytical linear theory result
-W(x) = 2 * Ωgrav_pklin(x)
-dWda(x) = 2 * derivative(Ωgrav_pklin, x)
-f(u, p, t) = -(2 * u + W(t)) / t - dWda(t)
-u0 = KovW[1] * W(t0)
-prob = ODEProblem(f, u0, tspan)
-sol_pklin = solve(prob, Tsit5())
 
 #%% Plot results and save to figure3.pdf
-p = plot(
-   a,
-   sol_pknl.(a)[:, 1],
-   lw = 2,
-   xlab = "Scale factor, a",
-   ylab = "Comiving Density Parameters",
-   lab = L"K: Nonlinear",
-   legend = :topleft,
+fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
+ii = findall(x -> x < 1, d.z)
+p = scatter(
+   d.z[ii],
+   -1.5 * d.Omega_th[ii] ./ Ωghalo[ii.+1] / fb,
+   yerror = (
+      -1.5 * (d.Omega_th .- d.Omega_th_low) ./ Ωghalo[2:end] / fb,
+      -1.5 * (d.Omega_th_up .- d.Omega_th) ./ Ωghalo[2:end] / fb,
+   ),
+   ms = 5,
+   c = 1,
+   ylims = [0.2, 1.5],
+   xlab = "Redshift, z",
+   ylab = L"\Omega_{th}/(-f_b\Omega_W^{halo}/3)",
+   lab = "Data",
+   legend = :topright,
    legendfontsize = 12,
    labelfontsize = 15,
-   ylims = [1e-7, 8e-7],
-   xlims = [0.2, 1.0],
 )
-p = plot!(a, -Ωgrav_pknl.(a), lw = 2, lab = L"-W/2: Nonlinear")
-p = plot!(a, sol_pklin.(a)[:, 1], c = 1, lw = 2, ls = :dot, lab = L"K: Linear")
-p = plot!(a, -Ωgrav_pklin.(a), c = 2, lw = 2, ls = :dot, lab = L"-W/2: Linear")
-# p = plot!(a, KovW .* W.(a), ls = :dot, lab = L"K: Linear,~Analytical")
+ii = findall(x -> x > 1, d.z)
+u = zeros(length(ii))
+v = -0.1 * ones(length(ii))
+p = quiver!(
+   d.z[ii],
+   -1.5 * d.Omega_th_up[ii] ./ Ωghalo[ii.+1] / fb,
+   quiver = (u, v),
+   c = 1,
+)
+p = plot!(
+   redshift,
+   -1.5 * Ωth ./ Ωghalo / fb,
+   ribbon = (
+      -1.5 * (Ωth - Ωthl) ./ Ωghalo / fb,
+      -1.5 * (Ωthu - Ωth) ./ Ωghalo / fb,
+   ),
+   lab = "Halo Model",
+   lw = 5,
+   c = 1,
+)
+p = plot!(
+   redshift,
+   -1.5 * ΩthB1 ./ Ωghalo / fb,
+   ls = :dashdot,
+   lab = "Halo Model (B=1)",
+   lw = 5,
+)
+p = hline!([1], c = :grey, lab="", lw = 2)
 savefig("figure3.pdf")
 display(p)
 

@@ -28,7 +28,7 @@ pk(kovh) =
    2 *
    π^2 / kovh^3
 
-# %% Compute Ωgrav from halos, using M200m and Mvir, and tinker08MF and tinker10MF
+# %% Compute `Ωgrav = Ωm * W / 2` from halos, using M200m and Mvir, and tinker08MF and tinker10MF
 z = redshift
 println("redshift = ", z)
 Ωgrav_halo = ograv_halo(pk, z, Ωm)

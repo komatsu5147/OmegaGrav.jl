@@ -19,7 +19,7 @@ filename = @sprintf("data/matterpower05_z%1d_pk_nl.dat", ired)
 d = readdlm(filename, comments = true)
 pknl_spl = Spline1D(d[:, 1], d[:, 2])
 
-# %% Compute Ωgrav
+# %% Compute `Ωgrav = Ωm * W / 2`
 println("redshift = ", z)
 # Linear matter power spectrum
 Ωgrav_pklin = ograv_pk(x -> pk_spl(x), z, Ωm)

@@ -42,7 +42,7 @@ for ired = 1:7
    # Define a function to return a halofit non-linear power spectrum
    pknl(kovh) = halofit(pk, p, Ωmz, kovh) # Mpc^3/h^3
 
-   # %% Compute Ωgrav
+   # %% Compute `Ωgrav = Ωm * W / 2`
    println("redshift = ", z)
    # Linear matter power spectrum
    Ωgrav_pklin[ired] = ograv_pk(pk, z, Ωm)

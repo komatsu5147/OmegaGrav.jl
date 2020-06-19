@@ -37,7 +37,7 @@ h0 = params["h"]
 cosmo.set(params)
 cosmo.compute()
 
-# %% Compute Ωgrav and Ωtherm at redshifts of the data points
+# %% Compute `Ωgrav = Ωm * W / 2` and Ωtherm at redshifts of the data points
 d = CSV.read("data/d16_Omega_th_data.csv")
 nred = size(d)[1]
 redshift = zeros(nred + 1)
@@ -106,15 +106,15 @@ p = plot!(
    Ωth,
    c = 1,
    ribbon = (Ωth - Ωthl, Ωthu - Ωth),
-   lab = L"B=1.27_{-0.04}^{+0.05}",
+   lab = "Halo Model",
 )
-p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_{grav}^{total}", lw = 2)
-p = plot!(redshift, -Ωghalo, c = :black, ls = :dash, lab = L"-\Omega_{grav}^{halo}", lw = 2)
+p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_W/2", lw = 2)
+p = plot!(redshift, -Ωghalo, c = :black, ls = :dash, lab = L"-\Omega_W^{halo}/2", lw = 2)
 p = plot!(
    redshift,
    y,
    ribbon = (Δyl, Δyu),
-   lab = L"-2f_b\Omega_{grav}/3",
+   lab = L"-f_b\Omega_W^{halo}/3",
    c = :green,
 )
 p = plot!(
