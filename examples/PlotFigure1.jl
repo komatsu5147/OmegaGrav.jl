@@ -52,17 +52,17 @@ fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
 y = 0.5 * (Ωghalo + ΔΩg) * (-2fb / 3)
 Δyu = ΔΩg * (-2fb / 3) - y
 Δyl = y - Ωghalo * (-2fb / 3)
-p = scatter(
-   (d.z, d.Omega_th),
-   yerror = (d.Omega_th .- d.Omega_th_low, d.Omega_th_up .- d.Omega_th),
-   ms = 5,
-   c = 1,
+p = plot(
+   redshift,
+   -2 * Ωgpk,
+   c = :black,
+   lab = L"-\Omega_W",
+   lw = 2,
    xlims = [0, 1.5],
-   ylims = [1e-9, 1e-6],
+   ylims = [1e-9, 2e-6],
    yaxis = :log,
    xlab = "Redshift, z",
    ylab = "Comoving Energy Density Parameters",
-   lab = L"\Omega_{th}~Data",
    legend = :topright,
    legendfontsize = 12,
    labelfontsize = 14,
@@ -70,19 +70,26 @@ p = scatter(
 )
 p = plot!(
    redshift,
+   -2 * Ωghalo,
+   c = :black,
+   ls = :dash,
+   lab = L"-\Omega_W^{halo}",
+   lw = 2,
+)
+p = plot!(redshift, y, ribbon = (Δyl, Δyu), lab = L"\Omega_W^{ref}", c = :green)
+p = scatter!(
+   (d.z, d.Omega_th),
+   yerror = (d.Omega_th .- d.Omega_th_low, d.Omega_th_up .- d.Omega_th),
+   ms = 5,
+   c = 1,
+   lab = L"\Omega_{th}~Data",
+)
+p = plot!(
+   redshift,
    Ωth,
    c = 1,
    ribbon = (Ωth - Ωthl, Ωthu - Ωth),
    lab = "Halo Model",
-)
-p = plot!(redshift, -Ωgpk, c = :black, lab = L"-\Omega_W/2", lw = 2)
-p = plot!(redshift, -Ωghalo, c = :black, ls = :dash, lab = L"-\Omega_W^{halo}/2", lw = 2)
-p = plot!(
-   redshift,
-   y,
-   ribbon = (Δyl, Δyu),
-   lab = L"-f_b\Omega_W^{halo}/3",
-   c = :green,
 )
 p = plot!(
    twinx(),
@@ -94,7 +101,7 @@ p = plot!(
    yaxis = :log,
    legend = false,
    xaxis = false,
-   ylims = [1e-9, 1e-6] * 0.2 / 1.7755e-8 * 0.049 / Ωb,
+   ylims = [1e-9, 2e-6] * 0.2 / 1.7755e-8 * 0.049 / Ωb,
    xlims = [0, 1.5],
    yticks = ([1e-2, 1e-1, 1, 10], ["0.01", "0.1", "1", "10"]),
 )
