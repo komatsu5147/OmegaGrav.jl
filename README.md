@@ -2,12 +2,12 @@
 
 This package contains functions to compute gravitational binding energy associated with large-scale clustering of matter (the so-called *large-scale structure*) in the Universe.
 
-If you came here to reproduce the results in the paper (Chiang, Makiya, Komatsu & Ménard), you can use [examples/PlotFigure1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure1.jl), [examples/PlotFigure2.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure2.jl),
+If you came here to reproduce the results in the paper ([Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679)), you can use [examples/PlotFigure1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure1.jl), [examples/PlotFigure2.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure2.jl),
 [examples/PlotFigure3.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure3.jl), [examples/PlotFigure4.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/PlotFigure4.jl), [examples/GenerateTable1.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateTable1.jl), and [examples/GenerateTable2.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateTable2.jl) to reproduce Figure 1-4 and Table 1,2 of the paper, respectively. Running these codes requires the python wrapper for CLASS [classy](https://github.com/lesgourg/class_public/wiki/Python-wrapper). The script [examples/compute_pk_class.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/compute_pk_class.jl) calls `classy` via `PyCall`.
 
 The package contains
-- ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav = Ωm * W / 2`, of gravitational binding energy computed from a matter power spectrum `pk`. Here, `W` is the mean gravitational potential energy per unit mass (see "The physics behind" at the bottom of this page). It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Equation (14) of Chiang, Makiya, Komatsu & Ménard (in prep)
-- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (17) of Chiang, Makiya, Komatsu & Ménard (in prep)
+- ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav = Ωm * W / 2`, of gravitational binding energy computed from a matter power spectrum `pk`. Here, `W` is the mean gravitational potential energy per unit mass (see "The physics behind" at the bottom of this page). It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Equation (14) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
+- ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (17) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
 
 ## Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.
@@ -172,7 +172,7 @@ Using Eq.(4) in Eq.(3), we find
 
 W<sub>1h</sub> = -(1/ρ<sub>b0</sub>)∫ dM dn/dM  (GM<sup>2</sup>/R) A<sub>g</sub>(M) -- (5)
 
-where R is a physical size of a halo and A<sub>g</sub>(M) ≡ (1/π)∫ dk |u(k,M)|<sup>2</sup>. A<sub>g</sub> is equal to 3/5 for a uniform density sphere  and is independent of M, but it depends weakly on M in general. Equation (5) was derived by Chiang, Makiya, Komatsu & Ménard (in prep).
+where R is a physical size of a halo and A<sub>g</sub>(M) ≡ (1/π)∫ dk |u(k,M)|<sup>2</sup>. A<sub>g</sub> is equal to 3/5 for a uniform density sphere  and is independent of M, but it depends weakly on M in general. Equation (5) was derived by [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
 
 In this Julia package `OmegaGrav.jl`, we provide functions `ograv_pk(pk, z, Ωm)` and `ograv_halo(pk, z, Ωm)` to evaluate Equations (3) and (5), respectively, as a function of redshift `z`. More precisely, the functions return the comoving density parameter `Ωgrav` defined by ``Ωgrav = Ωm W/2`` (following Section 2.4 of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155)), where `Ωm` is the present-day matter density parameter. For example, the calculation using these Julia functions shows that `ograv_halo` is about 1/3 and 1/10 of `ograv_pk` with the non-linear P(k) at z=0 and 1.5, respectively. Good to know!
 

@@ -3,7 +3,7 @@
 
 Comoving density parameter of thermal energy of ionized baryons in collapsed structures using Planck's universal pressure profile.
 
-*Reference*: Equation (1,3) of Chiang, Makiya, Komatsu & Ménard (in prep)
+*Reference*: Equation (1,6-8) of Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
@@ -75,7 +75,7 @@ end
 
 Comoving density parameter of thermal energy of ionized baryons in collapsed structures using Komatsu-Seljak pressure profile.
 
-*Reference*: Equation (1,3) of Chiang, Makiya, Komatsu & Ménard (in prep)
+*Reference*: Equation (1,6-8) of Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679
 
 # Arguments
 - `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
