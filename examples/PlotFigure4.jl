@@ -13,27 +13,27 @@ nred = length(a)
 sol_δθ = setup_growth(Ωm, 1 - Ωm)
 KovW = zeros(nred)
 for i = 1:nred
-   KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
+    KovW[i] = -2 / 3 * (sol_δθ(a[i])[2] / sol_δθ(a[i])[1])^2 * a[i] / Ωm
 end
 
 # %% Compute `Ωgrav = Ωm * W / 2` at various redshifts
 Ωgpk = zeros(nred)
 Ωglin = zeros(nred)
 for ired = 1:nred
-   z = 1 / a[ired] - 1
-   # Define functions to return linear and non-linear power spectra
-   # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
-   # return power spectra in units of Mpc^3 (no 1/h^3).
-   pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
-   pklin_class(kovh) = cosmo.pk_lin(kovh * h0, z) * h0^3
-   # Spline interpolate in log(k)
-   lnk = log(1e-4):0.05:log(100)
-   pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
-   pklin = Spline1D(lnk, pklin_class.(exp.(lnk)))
-   # %% Compute Ωgrav from non-linear total matter P(k)
-   Ωgpk[ired] = ograv_pk(x -> pknl(log(x)), z, Ωm)
-   # %% Compute Ωgrav from linear total matter P(k)
-   Ωglin[ired] = ograv_pk(x -> pklin(log(x)), z, Ωm)
+    z = 1 / a[ired] - 1
+    # Define functions to return linear and non-linear power spectra
+    # Note: The CLASS code takes wavenumbers in units of 1/Mpc (no h) and
+    # return power spectra in units of Mpc^3 (no 1/h^3).
+    pknl_class(kovh) = cosmo.pk(kovh * h0, z) * h0^3
+    pklin_class(kovh) = cosmo.pk_lin(kovh * h0, z) * h0^3
+    # Spline interpolate in log(k)
+    lnk = log(1e-4):0.05:log(100)
+    pknl = Spline1D(lnk, pknl_class.(exp.(lnk)))
+    pklin = Spline1D(lnk, pklin_class.(exp.(lnk)))
+    # %% Compute Ωgrav from non-linear total matter P(k)
+    Ωgpk[ired] = ograv_pk(x -> pknl(log(x)), z, Ωm)
+    # %% Compute Ωgrav from linear total matter P(k)
+    Ωglin[ired] = ograv_pk(x -> pklin(log(x)), z, Ωm)
 end
 Ωgrav_pklin = Spline1D(a, Ωglin)
 Ωgrav_pknl = Spline1D(a, Ωgpk)
@@ -57,23 +57,56 @@ prob = ODEProblem(f, u0, tspan)
 sol_pklin = solve(prob, Tsit5())
 
 #%% Plot results and save to figure4.pdf
+## Plot against the scale factor
+#p = plot(
+#    a,
+#    sol_pknl.(a)[:, 1],
+#    lw = 2,
+#    xlab = "Scale factor, a",
+#    ylab = "Comiving Density Parameters",
+#    lab = L"\Omega_K: Nonlinear",
+#    legend = :topleft,
+#    legendfontsize = 12,
+#    labelfontsize = 15,
+#    ylims = [1e-7, 8e-7],
+#    xlims = [0.2, 1.0],
+#)
+#p = plot!(a, -Ωgrav_pknl.(a), lw = 2, lab = L"-\Omega_W/2: Nonlinear")
+#p = plot!(a, sol_pklin.(a)[:, 1], c = 1, lw = 2, ls = :dot, lab = L"\Omega_K: Linear")
+#p = plot!(a, -Ωgrav_pklin.(a), c = 2, lw = 2, ls = :dot, lab = L"-\Omega_W/2: Linear")
+#p = plot!(a, KovW .* W.(a), ls = :dot, lab = L"K: Linear,~Analytical")
+## Plot against the redshift
+redshift = 1 ./ a .- 1
 p = plot(
-   a,
-   sol_pknl.(a)[:, 1],
-   lw = 2,
-   xlab = "Scale factor, a",
-   ylab = "Comiving Density Parameters",
-   lab = L"\Omega_K: Nonlinear",
-   legend = :topleft,
-   legendfontsize = 12,
-   labelfontsize = 15,
-   ylims = [1e-7, 8e-7],
-   xlims = [0.2, 1.0],
+    redshift,
+    sol_pknl.(a)[:, 1],
+    lw = 2,
+    xlab = "Redshift, z",
+    ylab = "Comiving Density Parameters",
+    lab = L"\Omega_K: Nonlinear",
+    legend = :topright,
+    legendfontsize = 12,
+    labelfontsize = 15,
+    ylims = [1e-7, 8e-7],
+    xlims = [0, 3.0],
 )
-p = plot!(a, -Ωgrav_pknl.(a), lw = 2, lab = L"-\Omega_W/2: Nonlinear")
-p = plot!(a, sol_pklin.(a)[:, 1], c = 1, lw = 2, ls = :dot, lab = L"\Omega_K: Linear")
-p = plot!(a, -Ωgrav_pklin.(a), c = 2, lw = 2, ls = :dot, lab = L"-\Omega_W/2: Linear")
-# p = plot!(a, KovW .* W.(a), ls = :dot, lab = L"K: Linear,~Analytical")
+p = plot!(redshift, -Ωgrav_pknl.(a), lw = 2, lab = L"-\Omega_W/2: Nonlinear")
+p = plot!(
+    redshift,
+    sol_pklin.(a)[:, 1],
+    c = 1,
+    lw = 2,
+    ls = :dot,
+    lab = L"\Omega_K: Linear",
+)
+p = plot!(
+    redshift,
+    -Ωgrav_pklin.(a),
+    c = 2,
+    lw = 2,
+    ls = :dot,
+    lab = L"-\Omega_W/2: Linear",
+)
 savefig("figure4.pdf")
 display(p)
 
