@@ -12,6 +12,10 @@ nred = length(redshift)
 Ωgh12 = zeros(nred)
 Ωgh13 = zeros(nred)
 Ωgh14 = zeros(nred)
+# ΩghaloT10 = zeros(nred)
+# Ωgh12T10 = zeros(nred)
+# Ωgh13T10 = zeros(nred)
+# Ωgh14T10 = zeros(nred)
 for ired = 1:nred
    z = redshift[ired]
    # Define functions to return linear and non-linear power spectra
@@ -34,6 +38,11 @@ for ired = 1:nred
    Ωgh12[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e12)
    Ωgh13[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e13)
    Ωgh14[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e14)
+   # %% Compute Ωgrav from Halos, excluding the neutrino contribution, with Tinker10MF
+   # ΩghaloT10[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, t10MF = true)
+   # Ωgh12T10[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e12, t10MF = true)
+   # Ωgh13T10[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e13, t10MF = true)
+   # Ωgh14T10[ired] = ograv_halo(x -> pkcb(log(x)), z, Ωm, Ωcb, Mmin = 1e14, t10MF = true)
 end
 
 #%% Save table data to table1.csv

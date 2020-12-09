@@ -86,6 +86,12 @@ function ograv_halo(
       dρdlnMh = 0.5 * spl(lnMh) * GN * exp(2 * lnMh) / RΔh * Ag(c)
    end
    ρgrav, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
+   redshift = z
+   if t10MF
+         fnu(x) = tinker10MF(x, redshift, Δm)
+         factor, err = hquadrature(fnu, -50, 5)
+         ρgrav /= factor
+   end
    halfW = -ρgrav / ρc / Ωcb
    Ωgrav = halfW * Ωcb
 end

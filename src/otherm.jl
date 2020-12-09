@@ -66,6 +66,12 @@ function otherm_upp(
       dρdlnMh = spl(lnMh) * Pe * 4π * RΔh^3 / massbias
    end
    ρe, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
+   redshift = z
+   if t10MF
+         fnu(x) = tinker10MF(x, redshift, Δm)
+         factor, err = hquadrature(fnu, -50, 5)
+         ρe /= factor
+   end
    Y = 0.24 # helium abundance
    Ωtherm = (8 - 5Y) / (4 - 2Y) * ρe * uppint / ρceVcm3
 end
@@ -156,5 +162,11 @@ function otherm_ks(
          spl(lnMh) * GN * exp(2 * lnMh) / RΔh * η0(c) / 3 * ρgnorm * ksints(c) # in units of h^2 M⊙/Mpc^3
    end
    res, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
+   redshift = z
+   if t10MF
+         fnu(x) = tinker10MF(x, redshift, Δm)
+         factor, err = hquadrature(fnu, -50, 5)
+         res /= factor
+   end
    Ωtherm = res / ρc
 end
