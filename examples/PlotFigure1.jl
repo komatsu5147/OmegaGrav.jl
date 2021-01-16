@@ -1,11 +1,11 @@
 using OmegaGrav
-using CSV
+using CSV, DataFrames
 using Dierckx
 using Plots, Plots.PlotMeasures, LaTeXStrings
 # %% Compute the matter power spectrum using CLASS
 include("compute_pk_class.jl")
 # %% Compute `Ωgrav = Ωm * W / 2` and Ωtherm at redshifts of the data points
-d = CSV.read("data/d16_Omega_th_data.csv")
+d = CSV.read("data/d16_Omega_th_data.csv", DataFrame)
 nred = size(d)[1]
 redshift = zeros(nred + 1)
 Ωghalo = zeros(nred + 1)
