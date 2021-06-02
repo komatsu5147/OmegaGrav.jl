@@ -3,7 +3,8 @@ using Dierckx
 using Tables, CSV
 # %% Compute the matter power spectrum using CLASS
 include("compute_pk_class.jl")
-# %% Compute Ωtherm at seven redshifts
+# %% Compute the Compton-y-weighted halo bias, `b_y`, at seven redshifts
+# Reference: Equation (B1) of Chiang, Makiya, Ménard & Komatsu, arXiv:2006.14650
 redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
 nred = length(redshift)
 b_y = zeros(nred)
@@ -16,7 +17,7 @@ for ired = 1:nred
    # Spline interpolate in log(k)
    lnk = log(1e-4):0.05:log(100)
    pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
-   # %% Compute the Compton-y-weighted halo bias, b_y
+   # %% Compute the Compton-y-weighted halo bias, `b_y`.
    b_y[ired] = by(x -> pkcb(log(x)), z, Ωm, Ωcb, αp = 0.12)
 end
 
