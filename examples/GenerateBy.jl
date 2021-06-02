@@ -6,10 +6,7 @@ include("compute_pk_class.jl")
 # %% Compute Ωtherm at seven redshifts
 redshift = [0, 0.3, 0.5, 0.7, 1, 1.3, 1.5]
 nred = length(redshift)
-Ωth = zeros(nred)
-Ωthu = zeros(nred)
-Ωthl = zeros(nred)
-ΩthB1 = zeros(nred)
+b_y = zeros(nred)
 for ired = 1:nred
    z = redshift[ired]
    # Define functions to return linear baryon+CDM power spectrum
@@ -19,26 +16,14 @@ for ired = 1:nred
    # Spline interpolate in log(k)
    lnk = log(1e-4):0.05:log(100)
    pkcb = Spline1D(lnk, pkcb_class.(exp.(lnk)))
-   # %% Compute Ωtherm from Halos, excluding the neutrino contribution
-   Ωth[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb)
-   # %% Compute Ωtherm for upper and lower 68% confidence level in B
-   Ωthl[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.315)
-   Ωthu[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1.221)
-   # %% Compute Ωtherm for no mass bias case for comparison
-   ΩthB1[ired] = otherm_upp(x -> pkcb(log(x)), z, Ωm, h0, Ωcb, massbias = 1)
+   # %% Compute the Compton-y-weighted halo bias, b_y
+   b_y[ired] = by(x -> pkcb(log(x)), z, Ωm, Ωcb, αp = 0.12)
 end
 
-#%% Save table data to otherm_upp.csv
-fb = params["omega_b"] / (params["omega_cdm"] + params["omega_b"])
-t = Tables.table([redshift Ωth Ωth - Ωthl Ωthu - Ωth ΩthB1])
-header = [
-   "z",
-   "Omega_th_B1p266",
-   "Omega_th_err_low",
-   "Omega_th_err_high",
-   "Omega_th_B1",
-]
-CSV.write("otherm_upp.csv", t, header = header)
+#%% Save table data to by.csv
+t = Tables.table([redshift b_y])
+header = ["z", "by"]
+CSV.write("by.csv", t, header = header)
 
 # %% Clean CLASS (the equivalent of the struct_free() in the `main`
 # of CLASS. This step is primordial when running in a loop over different

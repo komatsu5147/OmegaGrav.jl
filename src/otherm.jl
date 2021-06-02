@@ -68,9 +68,9 @@ function otherm_upp(
    ρe, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
    redshift = z
    if t10MF
-         fnu(x) = tinker10MF(x, redshift, Δm)
-         factor, err = hquadrature(fnu, -50, 5)
-         ρe /= factor
+      fnu(x) = tinker10MF(x, redshift, Δm)
+      factor, err = hquadrature(fnu, -50, 5)
+      ρe /= factor
    end
    Y = 0.24 # helium abundance
    Ωtherm = (8 - 5Y) / (4 - 2Y) * ρe * uppint / ρceVcm3
@@ -164,9 +164,59 @@ function otherm_ks(
    res, err = hquadrature(dρdlnMh, log(Mmin), log(Mmax))
    redshift = z
    if t10MF
-         fnu(x) = tinker10MF(x, redshift, Δm)
-         factor, err = hquadrature(fnu, -50, 5)
-         res /= factor
+      fnu(x) = tinker10MF(x, redshift, Δm)
+      factor, err = hquadrature(fnu, -50, 5)
+      res /= factor
    end
    Ωtherm = res / ρc
+end
+
+"""
+   by(pk, z, Ωm, [, Ωcb=Ωm]; αp = 0.12, Mmin = 1e11, Mmax = 5e15, t10MF = false)
+
+Compton-y-weighted halo bias.
+
+*Reference*: Equation (B1) of Chiang, Makiya, Ménard & Komatsu, arXiv:2006.14650
+
+# Arguments
+- `pk`(k): a function which returns a matter power spectrum with the argument k being the comoving wavenumber.
+   - `pk` is in units of (Mpc/h)^3 and the argument k is in units of h/Mpc.
+- `z::Real`: redshift.
+- `Ωm::Real`: present-day total matter density parameter.
+
+# Optional Arguments
+- `Ωcb::Real=Ωm`: present-day baryon + cold dark matter density parameter.
+
+# Optional keyword arguments
+- `αp::Real=0.12`: the empirical correction factor for the pressure-mass relation (Equation (7) of Arnaud et al., Astronomy & Astrophysics, 517, A92 (2010))
+- `Mmin::Real=1e11`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
+- `Mmax::Real=5e15`: maximum mass for integration, ``∫_{Mmin}^{Mmax} dn/dM ∫dV Pe``.
+- `t10MF::Bool=false`: if `true`, use `tinker10MF` for the halo multiplicity function. If `false` (the default), use `tinker08MF`.
+"""
+function by(
+   pk,
+   z::Real,
+   Ωm::Real,
+   Ωcb = Ωm;
+   αp = 0.12,
+   Mmin = 1e11,
+   Mmax = 5e15,
+   t10MF = false,
+)
+   Δc = 500 # 500 times the critical density of the Universe
+   E2 = Ωm * (1 + z)^3 + 1 - Ωm  # flat Universe
+   Δm = Δc * E2 / Ωm / (1 + z)^3 # Δm for mass function
+   nmass = 100
+   func1, func2 = zeros(nmass), zeros(nmass)
+   lnMh = range(log(Mmin), length = nmass, log(Mmax))
+   for i = 1:nmass
+      func1[i] = dndlnMh(pk, z, Δm, Ωcb, lnMh[i], t10MF = t10MF)
+      func2[i] = bdndlnMh(pk, z, Δm, Ωcb, lnMh[i], t10MF = t10MF)
+   end
+   spl1, spl2 = Spline1D(lnMh, func1), Spline1D(lnMh, func2)
+   dbylnMh1(lnMh) = spl1(lnMh) * exp(lnMh * (5 / 3 + αp))
+   dbylnMh2(lnMh) = spl2(lnMh) * exp(lnMh * (5 / 3 + αp))
+   by1, err = hquadrature(dbylnMh1, log(Mmin), log(Mmax))
+   by2, err = hquadrature(dbylnMh2, log(Mmin), log(Mmax))
+   by = by2 / by1
 end
