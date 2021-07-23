@@ -12,7 +12,7 @@ To calculate the Compton-y-weighted halo clustering bias, `b_y`, given in Equati
 From the Julia REPL, run
 ```Julia
 using Pkg
-Pkg.add("https://github.com/komatsu5147/OmegaGrav.jl")
+Pkg.add(url="https://github.com/komatsu5147/OmegaGrav.jl")
 ```
 ## Contents
 
