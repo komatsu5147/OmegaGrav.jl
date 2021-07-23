@@ -7,6 +7,15 @@ If you came here to reproduce the results in the paper ([Chiang, Makiya, Komatsu
 
 To calculate the Compton-y-weighted halo clustering bias, `b_y`, given in Equation (B1) of [Chiang, Makiya, Ménard & Komatsu, arXiv:2006.14650](https://arxiv.org/abs/2006.14650), you can use [examples/GenerateBy.jl](https://github.com/komatsu5147/OmegaGrav.jl/tree/master/examples/GenerateBy.jl).
 
+## Installation
+
+From the Julia REPL, run
+```Julia
+using Pkg
+Pkg.add("https://github.com/komatsu5147/OmegaGrav.jl")
+```
+## Contents
+
 The package contains
 - ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav = Ωm * W / 2`, of gravitational binding energy computed from a matter power spectrum `pk`. Here, `W` is the mean gravitational potential energy per unit mass (see "The physics behind" at the bottom of this page). It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Equation (14) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
 - ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (17) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
