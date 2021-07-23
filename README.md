@@ -20,16 +20,16 @@ The package contains
 - ``ograv_pk(pk, z, Ωm; kmin=5e-4, kmax=3e1)``: returns the comoving density parameter, `Ωgrav = Ωm * W / 2`, of gravitational binding energy computed from a matter power spectrum `pk`. Here, `W` is the mean gravitational potential energy per unit mass (see "The physics behind" at the bottom of this page). It is based on Equation (60) of [Fukugita & Peebles, ApJ, 616, 643 (2004)](https://iopscience.iop.org/article/10.1086/425155), extended to arbitrary redshift `z` by Equation (14) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
 - ``ograv_halo(pk, z, Ωm[, Ωcb=Ωm]; Mmin=1e11, Mmax=5e15, virial=false, t10MF=false)``: returns `Ωgrav` from gravitationally collapsed structures (*halos*). It uses Equation (17) of [Chiang, Makiya, Komatsu & Ménard, arXiv:2007.01679](https://arxiv.org/abs/2007.01679).
 
-## Arguments
+### Arguments
 - `pk::Any`(k): a function which returns a linear matter power spectrum with the argument k being the comoving wavenumber. This can be an interpolation function constructed from tabulated data.
    - `pk` is in units of (Mpc/h)^3 and the argument k is in units of h/Mpc.
 - `z::Real`: redshift.
 - `Ωm::Real`: present-day total matter density parameter.
 
-## Optional arguments
+### Optional arguments
 - `Ωcb::Real`: present-day baryon + cold dark matter density parameter. The default value is equal to `Ωm` given in the argument. This parameter is relevant when the neutrino contribution to the mass density needs to be excluded.
 
-## Optional keyword arguments
+### Optional keyword arguments
 - `kmin::Real`: minimum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `5e-4`.
 - `kmax::Real`: maximum wavenumber for integration, ``∫_{kmin}^{kmax} dk P(k)``. The default value: `3e1`.
 - `Mmin::Real`: minimum mass for integration, ``∫_{Mmin}^{Mmax} dM dn/dM Ag GM^2/R``. The default value: `1e11`.
